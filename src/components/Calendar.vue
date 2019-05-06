@@ -1,14 +1,14 @@
 <template>
-  <div id="calendar">
+  <div id="calendar" @click="onClick">
     <h1>
       {{ title }}
       <span>{{ year }}</span>
     </h1>
     <div class="months">
-      <Month v-for="month in months" :key="month.name" :month="month" @showModal="showModal" />
+      <Month v-for="month in months" :key="month.name" :month="month" @toggleModal="toggleModal" />
     </div>
 
-    <Modal :data="modalData" />
+    <Modal :bookData="bookData" />
   </div>
 </template>
 
@@ -26,7 +26,7 @@ export default {
       title: 'Planner',
       year: null,
       months: [],
-      modalData: {},
+      bookData: {},
     };
   },
   mounted() {
@@ -42,11 +42,23 @@ export default {
       .then(() => setCurrentDate());
   },
   methods: {
-    showModal(data) {
+    onClick(e) {
+      if (e.target.classList.contains('modal') || e.target.classList.contains('modal-close')) {
+        this.toggleModal();
+      }
+    },
+    toggleModal(data) {
+      this.isModalVisible = !this.isModalVisible;
+
+      if (!this.isModalVisible) {
+        document.body.classList.remove('modal-open');
+        return;
+      }
+
       const parsedDataFrom = Object.values(data.from).join('-');
 
-      this.modalData = {
-        ...this.modalData,
+      this.bookData = {
+        ...this.bookData,
         from: parsedDataFrom,
         fromDayPart: data.fromDayPart.dayPart,
       };

@@ -47,7 +47,7 @@ export default {
       const day = Array.from(dayNode.parentNode.children).indexOf(dayNode);
       const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
-      this.$emit('showModal', {
+      this.$emit('toggleModal', {
         from: {
           year,
           monthNum,
@@ -121,6 +121,10 @@ export default {
     pointer-events: none;
   }
 
+  &:not(.day--offset) {
+    border: 1px solid rgba(#000, 0.05);
+  }
+
   &:not(.day--non-working) {
     .half {
       &:hover {
@@ -152,13 +156,13 @@ export default {
     }
   }
 
+  &--non-working {
+    background-color: rgba(#000, 0.08);
+  }
+
   &--offset {
     pointer-events: none;
     user-select: none;
-  }
-
-  &--non-working {
-    background-color: #ddd;
   }
 }
 </style>
