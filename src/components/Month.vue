@@ -1,21 +1,22 @@
 <template>
   <div class="month">
-    <h2>{{month.name}}</h2>
+    <h2>{{ month.name }}</h2>
 
-    <Week/>
+    <Week />
 
     <div class="days-list">
-      <div v-for="(day, index) in offsetDays" :key="index+32" class="day day--offset">&nbsp;</div>
+      <div v-for="(day, index) in offsetDays" :key="index + 32" class="day day--offset">&nbsp;</div>
 
       <div
         v-for="(day, index) in days"
         :key="index"
-        :class="{'day--non-working': day.isNonWorking }"
+        :class="{ 'day--non-working': day.isNonWorking }"
         @click.prevent="onClick"
+        :data-date="formatDate(day.id)"
         class="day"
       >
         <div class="half first"></div>
-        <span class="day-index">{{day.id}}</span>
+        <span class="day-index">{{ day.id }}</span>
         <div class="half second"></div>
       </div>
     </div>
@@ -23,35 +24,45 @@
 </template>
 
 <script>
-import Week from "./Week";
+import Week from './Week';
 
 export default {
-  name: "Month",
+  name: 'Month',
   props: {
     month: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
+  },
+  data() {
+    return {};
   },
   methods: {
     onClick(e) {
-      const { year, monthNum } = this.$props.month;
-
       const dayNode = e.target.parentNode;
-      const day = Array.from(dayNode.parentNode.children).indexOf(dayNode);
-      const dayPart = e.target.classList.contains("first") ? "AM" : "PM";
 
-      this.$emit("showModal", {
+      if (dayNode.classList.contains('day--non-working')) return;
+
+      const { year, monthNum } = this.$props.month;
+      const day = Array.from(dayNode.parentNode.children).indexOf(dayNode);
+      const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+
+      this.$emit('showModal', {
         from: {
           year,
           monthNum,
-          day
+          day,
         },
         fromDayPart: {
-          dayPart
-        }
+          dayPart,
+        },
       });
-    }
+    },
+    formatDate(day) {
+      const { year, monthNum } = this.$props.month;
+
+      return `${year}-${monthNum}-${day}`;
+    },
   },
   computed: {
     days() {
@@ -60,11 +71,11 @@ export default {
 
       for (let i = 1; i <= this.month.days.total; i++) {
         const dayObj = {
-          id: i
+          id: i,
         };
 
         if (nonWorkingDays.includes(i)) {
-          dayObj["isNonWorking"] = true;
+          dayObj['isNonWorking'] = true;
         }
 
         days.push(dayObj);
@@ -74,11 +85,11 @@ export default {
     },
     offsetDays() {
       return this.month.monthStart;
-    }
+    },
   },
   components: {
-    Week
-  }
+    Week,
+  },
 };
 </script>
 
@@ -128,7 +139,7 @@ export default {
   &--current {
     .day-index {
       &::after {
-        content: "";
+        content: '';
         position: absolute;
         top: 50%;
         left: 50%;

@@ -11,8 +11,8 @@ export default {
   name: 'Planner',
   components: {
     Calendar,
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

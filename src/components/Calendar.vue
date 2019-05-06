@@ -2,58 +2,62 @@
   <div id="calendar">
     <h1>
       {{ title }}
-      <span>{{year}}</span>
+      <span>{{ year }}</span>
     </h1>
     <div class="months">
-      <Month v-for="month in months" :key="month.name" :month="month" @showModal="showModal"/>
+      <Month v-for="month in months" :key="month.name" :month="month" @showModal="showModal" />
     </div>
 
-    <Modal :data="modalData"/>
+    <Modal :data="modalData" />
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import Month from "./Month";
-import Modal from "./Modal";
+import axios from 'axios';
+import Month from './Month';
+import Modal from './Modal';
+import { setCurrentDate } from '../helpers/date';
+import { setScrollBarWidth } from '../helpers/utils';
 
 export default {
-  name: "Calendar",
+  name: 'Calendar',
   data() {
     return {
-      title: "Planner",
+      title: 'Planner',
       year: null,
       months: [],
-      modalData: {}
+      modalData: {},
     };
   },
   mounted() {
     axios
-      .get("https://caf4a712-7701-41f3-b8ba-7ebc3741a8e2.mock.pstmn.io/")
+      .get('https://caf4a712-7701-41f3-b8ba-7ebc3741a8e2.mock.pstmn.io/')
       .then(({ data }) => {
         if (data.success) {
           this.year = data.year;
-          data.months.forEach(month => this.months.push(month));
+          data.months.forEach((month) => this.months.push(month));
         }
-      });
+      })
+      .then(() => setScrollBarWidth())
+      .then(() => setCurrentDate());
   },
   methods: {
     showModal(data) {
-      const parsedDataFrom = Object.values(data.from).join("-");
+      const parsedDataFrom = Object.values(data.from).join('-');
 
       this.modalData = {
         ...this.modalData,
         from: parsedDataFrom,
-        fromDayPart: data.fromDayPart.dayPart
+        fromDayPart: data.fromDayPart.dayPart,
       };
 
-      document.body.classList.add("modal-open");
-    }
+      document.body.classList.add('modal-open');
+    },
   },
   components: {
     Month,
-    Modal
-  }
+    Modal,
+  },
 };
 </script>
 

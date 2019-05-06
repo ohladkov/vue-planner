@@ -1,6 +1,6 @@
 <template>
   <div class="week">
-    <div class="week-day" v-for="day in days" :key="day">{{day}}</div>
+    <div class="week-day" v-for="day in days" :key="day">{{ day }}</div>
   </div>
 </template>
 
@@ -9,12 +9,11 @@ export default {
   name: 'Week',
   data() {
     return {
-      days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    }
-  }
-}
+      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    };
+  },
+};
 </script>
-
 
 <style lang="scss">
 .week {

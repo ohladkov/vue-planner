@@ -1,28 +1,27 @@
 <template>
   <div class="modal" @click="onModalClick">
-    <div class="modal-box">{{data}}</div>
+    <div class="modal-box">{{ data }}</div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Modal",
+  name: 'Modal',
   props: {
     data: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     onModalClick(e) {
-      if (e.target.classList.contains("modal")) {
-        document.body.classList.remove("modal-open");
+      if (e.target.classList.contains('modal')) {
+        document.body.classList.remove('modal-open');
       }
-    }
-  }
+    },
+  },
 };
 </script>
-
 
 <style lang="scss">
 .modal {

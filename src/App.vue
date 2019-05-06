@@ -1,23 +1,24 @@
 <template>
   <div id="app">
-    <Planner msg="Welcome to Your Vue.js App"/>
+    <Planner msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
 <script>
-import Planner from "./components/Planner.vue";
+import Planner from './components/Planner.vue';
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
-    Planner
-  }
+    Planner,
+  },
 };
 </script>
 
 <style lang="scss">
 :root {
   --daysInWeek: 7;
+  --scrollBarWidth: 0;
 }
 
 html {
@@ -34,12 +35,13 @@ body {
   margin: 0;
 
   &.modal-open {
+    padding-right: calc(var(--scrollBarWidth) * 1px);
     overflow: hidden;
   }
 }
 
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
