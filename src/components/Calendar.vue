@@ -31,7 +31,7 @@ export default {
   },
   mounted() {
     axios
-      .get('https://caf4a712-7701-41f3-b8ba-7ebc3741a8e2.mock.pstmn.io/')
+      .get('http://www.mocky.io/v2/5cd160933300004a00b12938')
       .then(({ data }) => {
         if (data.success) {
           this.year = data.year;
@@ -55,12 +55,9 @@ export default {
         return;
       }
 
-      const parsedDataFrom = Object.values(data.from).join('-');
-
       this.bookData = {
         ...this.bookData,
-        from: parsedDataFrom,
-        fromDayPart: data.fromDayPart.dayPart,
+        ...data,
       };
 
       document.body.classList.add('modal-open');

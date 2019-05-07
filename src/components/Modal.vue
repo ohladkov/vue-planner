@@ -13,8 +13,8 @@
             <div class="book-form__row-wrapper">
               <div class="book-form__row">
                 <label for="book-type">Type</label>
-                <select name="book-type" id="book-type" v-model="formData.bookTypeSelected">
-                  <option v-for="option in formData.bookType" :key="option" :value="option">{{ option }}</option>
+                <select name="book-type" id="book-type" v-model="bookForm.bookTypeSelected">
+                  <option v-for="option in bookForm.bookType" :key="option" :value="option">{{ option }}</option>
                 </select>
               </div>
             </div>
@@ -22,18 +22,39 @@
             <div class="book-form__row-wrapper">
               <div class="book-form__row">
                 <label for="book-from">Starting</label>
-                <input type="text" name="book-from" id="book-from" v-model="formData.from" />
-                <select name="book-fromDayPart" id="book-fromDayPart" v-model="formData.fromDayPartSelected">
-                  <option v-for="option in formData.fromDayPart" :key="'from: ' + option.value" :value="option.value">{{
-                    option.text
-                  }}</option>
+
+                <datepicker
+                  v-model="bookForm.from"
+                  format="D, dd MMM yy"
+                  :mondayFirst="true"
+                  :disabledDates="bookForm.fromDisabledDates"
+                  @selected="onSelect"
+                  name="book-from"
+                  id="book-from"
+                >
+                </datepicker>
+
+                <select name="book-fromDayPart" id="book-fromDayPart" v-model="bookForm.fromDayPartSelected">
+                  <option v-for="option in bookForm.fromDayPart" :key="`from-${option.text}`" :value="option.value">
+                    {{ option.text }}
+                  </option>
                 </select>
               </div>
               <div class="book-form__row">
-                <label for="book-to">Ending</label>
-                <input type="text" name="book-to" id="book-to" v-model="formData.to" />
-                <select name="book-toDayPart" id="book-toDayPart" v-model="formData.toDayPartSelected">
-                  <option v-for="option in formData.toDayPart" :key="'to: ' + option.value" :value="option.value">{{
+                <label for="book-to" ref="toDateLabel">Ending</label>
+
+                <datepicker
+                  v-model="bookForm.to"
+                  format="D, dd MMM yy"
+                  :mondayFirst="true"
+                  :disabledDates="bookForm.toDisabledDates"
+                  name="book-to"
+                  id="book-to"
+                >
+                </datepicker>
+
+                <select name="book-toDayPart" id="book-toDayPart" v-model="bookForm.toDayPartSelected">
+                  <option v-for="option in bookForm.toDayPart" :key="`to-${option.text}`" :value="option.value">{{
                     option.text
                   }}</option>
                 </select>
@@ -44,10 +65,10 @@
               <div class="book-form__row">
                 <label for="reason">Reason (Required)</label>
                 <textarea
+                  v-model="bookForm.reason"
                   name="reason"
-                  id="reason"
                   placeholder="Reason for time off..."
-                  v-model="formData.reason"
+                  id="reason"
                 ></textarea>
               </div>
             </div>
@@ -61,6 +82,10 @@
 </template>
 
 <script>
+import Datepicker from 'vuejs-datepicker';
+import moment from 'moment';
+import { getCurrentDate } from '../helpers/date';
+
 export default {
   name: 'Modal',
   props: {
@@ -71,10 +96,14 @@ export default {
   },
   data() {
     return {
-      formData: {
+      currentDate: getCurrentDate(),
+      bookForm: {
         bookType: ['holiday', 'day-off', 'sickness'],
         bookTypeSelected: 'holiday',
-        from: '',
+        from: moment(getCurrentDate()).toDate(),
+        fromDisabledDates: {
+          to: moment(getCurrentDate()).toDate(),
+        },
         fromDayPart: [
           {
             value: 'AM',
@@ -85,8 +114,11 @@ export default {
             text: 'afternoon',
           },
         ],
-        fromDayPartSelected: 'PM',
-        to: '',
+        fromDayPartSelected: 'AM',
+        to: moment(getCurrentDate()).toDate(),
+        toDisabledDates: {
+          to: moment(getCurrentDate()).toDate(),
+        },
         toDayPart: [
           {
             value: 'AM',
@@ -101,6 +133,43 @@ export default {
         reason: '',
       },
     };
+  },
+  methods: {
+    onSubmit(e) {
+      const formData = new FormData(e.target);
+
+      for (let pair of formData.entries()) {
+        // eslint-disable-next-line
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+    },
+    onSelect(date) {
+      if (moment(date).isBefore(this.bookForm.to)) {
+        return;
+      }
+
+      this.bookForm.to = date;
+
+      this.bookForm.toDisabledDates = {
+        to: date,
+      };
+    },
+  },
+  watch: {
+    bookData(newVal) {
+      if (moment(newVal.from).isBefore(this.currentDate)) {
+        return;
+      }
+
+      this.bookForm.from = moment(newVal.from).toDate();
+      this.bookForm.to = moment(newVal.to).toDate();
+
+      this.bookForm.fromDayPartSelected = newVal.fromDayPart;
+      this.bookForm.toDayPartSelected = newVal.toDayPart;
+    },
+  },
+  components: {
+    Datepicker,
   },
 };
 </script>
@@ -165,9 +234,6 @@ export default {
 }
 
 .book-form {
-  &-wrapper {
-  }
-
   &__row-wrapper {
     display: flex;
     justify-content: space-between;
@@ -177,6 +243,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     max-width: 46%;
     width: 100%;
     margin-bottom: 20px;

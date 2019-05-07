@@ -43,19 +43,14 @@ export default {
 
       if (dayNode.classList.contains('day--non-working')) return;
 
-      const { year, monthNum } = this.$props.month;
-      const day = Array.from(dayNode.parentNode.children).indexOf(dayNode);
       const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
       this.$emit('toggleModal', {
-        from: {
-          year,
-          monthNum,
-          day,
-        },
-        fromDayPart: {
-          dayPart,
-        },
+        from: dayNode.dataset.date,
+        fromDayPart: dayPart,
+
+        to: dayNode.dataset.date,
+        toDayPart: dayPart,
       });
     },
     formatDate(day) {
