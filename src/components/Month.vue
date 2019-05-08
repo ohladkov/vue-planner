@@ -5,14 +5,19 @@
     <Week />
 
     <div class="days-list">
-      <div v-for="(day, index) in offsetDays" :key="index + 32" class="day day--offset">&nbsp;</div>
+      <div v-for="(day, index) in offsetDays" :key="index + 100" class="day day--offset">&nbsp;</div>
 
       <div
-        v-for="(day, index) in days"
+        v-for="(day, index) in daysList"
         :key="index"
-        :class="{ 'day--non-working': day.isNonWorking }"
+        :class="{
+          'day--non-working': day.isNonWorking,
+          'day--holiday': day.isHoliday && !day.holidayDayPart,
+          'day--holiday-am': day.isHoliday && day.holidayDayPart === 1,
+          'day--holiday-pm': day.isHoliday && day.holidayDayPart === 2,
+        }"
         @click.prevent="onClick"
-        :data-date="formatDate(day.id)"
+        :data-date="formatDate(index + 1)"
         class="day"
       >
         <div class="half first"></div>
@@ -60,23 +65,44 @@ export default {
     },
   },
   computed: {
-    days() {
-      const nonWorkingDays = this.month.days.nonWorkingDays;
-      const days = [];
+    daysList() {
+      const { days, nonWorkingDays, holidays } = this.$props.month;
 
-      for (let i = 1; i <= this.month.days.total; i++) {
+      const daysList = [];
+
+      for (let i = 1; i <= days; i++) {
         const dayObj = {
           id: i,
+          isNonWorking: false,
+          isHoliday: false,
         };
 
-        if (nonWorkingDays.includes(i)) {
-          dayObj['isNonWorking'] = true;
+        if (nonWorkingDays && nonWorkingDays.length) {
+          nonWorkingDays.forEach((day) => {
+            if (dayObj.id === day.dayNum) {
+              dayObj.isNonWorking = true;
+            }
+          });
         }
 
-        days.push(dayObj);
+        if (holidays && holidays.length) {
+          holidays.forEach((day) => {
+            if (dayObj.id === day.dayNum) {
+              dayObj.isHoliday = true;
+
+              if (day.dayPart) {
+                dayObj.holidayDayPart = day.dayPart;
+              }
+            }
+          });
+        }
+
+        daysList.push(dayObj);
       }
 
-      return days;
+      console.log(daysList);
+
+      return daysList;
     },
     offsetDays() {
       return this.month.monthStart;
@@ -120,7 +146,7 @@ export default {
     border: 1px solid rgba(#000, 0.05);
   }
 
-  &:not(.day--non-working) {
+  &:not(.day--non-working):not(.day--holiday) {
     .half {
       &:hover {
         background-color: #f1f1f1;
@@ -153,6 +179,28 @@ export default {
 
   &--non-working {
     background-color: rgba(#000, 0.08);
+  }
+
+  &--holiday {
+    color: #fff;
+    background-color: crimson;
+
+    &-am,
+    &-pm {
+      background-color: #fff;
+    }
+
+    &-am {
+      .first {
+        background-color: crimson;
+      }
+    }
+
+    &-pm {
+      .second {
+        background-color: crimson;
+      }
+    }
   }
 
   &--offset {

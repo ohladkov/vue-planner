@@ -31,7 +31,7 @@ export default {
   },
   mounted() {
     axios
-      .get('http://www.mocky.io/v2/5cd160933300004a00b12938')
+      .get('http://www.mocky.io/v2/5cd29f6e3100008628339892')
       .then(({ data }) => {
         if (data.success) {
           this.year = data.year;
