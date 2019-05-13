@@ -12,5 +12,5 @@ export const setCurrentDate = () => {
   const today = getCurrentDate();
 
   const todayEl = document.querySelector(`[data-date="${today}"]`);
-  todayEl.classList.add('day--current');
+  todayEl.dataset.current = true;
 };

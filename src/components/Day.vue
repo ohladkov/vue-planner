@@ -1,31 +1,22 @@
 <template>
-  <div
-    class="day"
-    :class="{
-      'past': isPast
-    }"
-    :data-date="dateFormat"
-    :data-non-working="isNonWorking"
-    :data-holiday="isHoliday"
-    @click="onClick"
-  >
-    <div 
-      class="half first" 
-      :class="{
-        'highlighted': dayPart === 1 || (isHoliday && !dayPart),
-      }"
-      :data-non-working="isNonWorking"
-      :data-holiday="isHoliday"
+  <div class="day" :class="{ 'non-working': day.nonWorkingDay.id }" :data-date="day.format" @click="onClick">
+    <div
+      class="half first"
+      :class="day.holiday.am_type"
+      :data-holiday-id="day.holiday.am_hol_id"
+      :data-title="day.holiday.am_name"
     ></div>
 
-    <span class="day-index">{{ day.id }}</span>
-    
-    <div 
-      class="half second" 
-      :class="{
-        'highlighted': dayPart === 2 || (isHoliday && !dayPart),
-      }"
-      ></div>
+    <div class="day-index">
+      {{ day.id }}
+    </div>
+
+    <div
+      class="half second"
+      :class="day.holiday.pm_type"
+      :data-holiday-id="day.holiday.pm_hol_id"
+      :data-title="day.holiday.pm_name"
+    ></div>
   </div>
 </template>
 
@@ -42,26 +33,24 @@ export default {
     },
   },
   data() {
-    return {
-      isNonWorking: this.day.isNonWorking,
-      isHoliday: this.day.isHoliday,
-      dayPart: this.day.dayPart,
-      dateFormat: this.day.format
-    }
+    return {};
   },
+  mounted() {},
   methods: {
     onClick(e) {
       const dayNode = e.target.parentNode;
 
-      if (this.isNonWorking || (this.isHoliday && !this.dayPart) || !dayNode.dataset.date) {
+      if (
+        dayNode.classList.contains('non-working') ||
+        moment(dayNode.dataset.date).isBefore(getCurrentDate()) ||
+        !dayNode.dataset.date
+      ) {
         return;
       }
 
-      if (moment(dayNode.dataset.date).isBefore(getCurrentDate())) {
+      if (e.target.dataset.holiday || e.target.dataset.sickness) {
         return;
       }
-
-      if (dayNode.classList.contains('day--non-working')) return;
 
       const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
@@ -73,11 +62,7 @@ export default {
       });
     },
   },
-  computed: {
-    isPast() {
-      return moment(this.dateFormat).isBefore(getCurrentDate());
-    }
-  }
+  computed: {},
 };
 </script>
 
@@ -101,50 +86,73 @@ export default {
     pointer-events: none;
   }
 
-  &--current {
-    .day-index {
-      &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 30px;
-        height: 30px;
-        border: 2px solid rgba(#000, 0.5);
-        border-radius: 50%;
-      }
-    }
-  }
-
-  &.past {
-    cursor: not-allowed;
-    user-select: none;
-    opacity: 0.25;
-  }
-
-  &:not(.past) {
-    .half {
-      &:not(.highlighted) {
-        &:hover {
-          background-color: rgba(#000, 0.1);
-        }
-      }
-    }
-  }
-  
-  .half {
-    width: 100%;
-    transition: background-color 0.3s;
-  }
-
-  &[data-non-working] {
+  &.non-working {
     background-color: rgba(#000, 0.2);
   }
 
-  &[data-holiday] {
-    .highlighted {
-      background-color: rgba(crimson, 0.6);
+  .half {
+    position: relative;
+    width: 100%;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: rgba(#000, 0.1);
+    }
+
+    &::after {
+      display: none;
+      content: attr(data-title);
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      z-index: 1;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      color: #fff;
+      border-radius: 4px;
+      background-color: rgba(#000, 0.9);
+    }
+
+    &[data-title] {
+      &:hover {
+        &::after {
+          display: block;
+        }
+      }
+    }
+
+    &.holiday {
+      background-color: rgba(green, 0.7);
+    }
+
+    &.sickness {
+      background-color: rgba(red, 0.7);
+    }
+  }
+
+  .info {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    max-width: 260px;
+    width: 100%;
+    border: 1px solid #000;
+    transform: translateX(-50%);
+  }
+}
+
+[data-current] {
+  .day-index {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      border: 2px solid rgba(#000, 0.5);
+      border-radius: 50%;
     }
   }
 }

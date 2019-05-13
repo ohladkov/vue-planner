@@ -7,20 +7,14 @@
     <div class="days-list">
       <div class="day day--offset" v-for="day in month.monthStart" :key="'offsetday: ' + day">&nbsp;</div>
 
-      <Day 
-        v-for="day in daysList" 
-        :key="day.id" 
-        :day="day"
-        @onDayClick="onDayClick"
-      />
-
+      <Day v-for="day in daysList" :key="day.id" :day="day" @onDayClick="onDayClick" />
     </div>
   </div>
 </template>
 
 <script>
 import Week from './Week';
-import Day from './Day'
+import Day from './Day';
 
 export default {
   name: 'Month',
@@ -31,7 +25,7 @@ export default {
     },
   },
   data() {
-    return {}
+    return {};
   },
   methods: {
     onDayClick(data) {
@@ -48,34 +42,35 @@ export default {
       const { days, nonWorkingDays, holidays } = this.$props.month;
 
       const daysList = [];
+      const parsedHolidays = {};
+
+      for (const [, val] of Object.entries(holidays)) {
+        parsedHolidays[val.day] = val;
+      }
 
       for (let i = 1; i <= days; i++) {
         const dayObj = {
           id: i,
-          isNonWorking: false,
-          isHoliday: false,
-          format: this.formatDate(i)
+          format: this.formatDate(i),
+          nonWorkingDay: {},
+          holiday: {},
         };
 
-        if (nonWorkingDays && nonWorkingDays.length) {
-          nonWorkingDays.forEach((day) => {
-            if (dayObj.id === day.dayNum) {
-              dayObj.isNonWorking = true;
+        if (nonWorkingDays.length) {
+          nonWorkingDays.forEach((nonWorkingDay) => {
+            if (i === nonWorkingDay.day) {
+              dayObj.nonWorkingDay.id = nonWorkingDay.day;
+              dayObj.nonWorkingDay.name = nonWorkingDay.name;
+              dayObj.nonWorkingDay.dayPart = nonWorkingDay.dayPart;
             }
           });
         }
 
-        if (holidays && holidays.length) {
-          holidays.forEach((day) => {
-            if (dayObj.id === day.dayNum) {
-              dayObj.isHoliday = true;
-
-              if (day.dayPart) {
-                dayObj.dayPart = day.dayPart;
-              }
-            }
-          });
-        }
+        Object.values(parsedHolidays).map((holiday) => {
+          if (i === holiday.day) {
+            dayObj.holiday = holiday;
+          }
+        });
 
         daysList.push(dayObj);
       }
@@ -88,7 +83,7 @@ export default {
   },
   components: {
     Week,
-    Day
+    Day,
   },
 };
 </script>
