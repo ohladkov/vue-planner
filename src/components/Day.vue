@@ -1,39 +1,58 @@
 <template>
-  <div class="day" :class="{ 'non-working': day.nonWorkingDay.id }" :data-date="day.format" @click="onClick">
+  <div
+    class="day"
+    :class="{ 'non-working': day.nonWorkingDay.id }"
+    :data-date="day.format"
+    :data-is-past="isPast"
+    @click="onClick"
+  >
     <div
       class="half first"
       :class="day.holiday.am_type"
       :data-holiday-id="day.holiday.am_hol_id"
       :data-title="day.holiday.am_name"
+      v-tooltip="{
+        trigger: 'manual',
+        show: isOpenAM,
+        content: tooltipContent
+      }"
     ></div>
 
-    <div class="day-index">
-      {{ day.id }}
-    </div>
+    <div class="day-index">{{ day.id }}</div>
 
     <div
       class="half second"
       :class="day.holiday.pm_type"
       :data-holiday-id="day.holiday.pm_hol_id"
       :data-title="day.holiday.pm_name"
+      v-tooltip="{
+        trigger: 'manual',
+        show: isOpenPM,
+        content: tooltipContent
+      }"
     ></div>
   </div>
 </template>
 
 <script>
-import moment from 'moment';
-import { getCurrentDate } from '../helpers/date';
+import axios from "axios";
+import moment from "moment";
+import { getCurrentDate } from "../helpers/date";
 
 export default {
-  name: 'Day',
+  name: "Day",
   props: {
     day: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
-    return {};
+    return {
+      isOpenAM: false,
+      isOpenPM: false,
+      tooltipContent: null
+    };
   },
   mounted() {},
   methods: {
@@ -41,28 +60,53 @@ export default {
       const dayNode = e.target.parentNode;
 
       if (
-        dayNode.classList.contains('non-working') ||
+        dayNode.classList.contains("non-working") ||
         moment(dayNode.dataset.date).isBefore(getCurrentDate()) ||
         !dayNode.dataset.date
       ) {
         return;
       }
 
-      if (e.target.dataset.holiday || e.target.dataset.sickness) {
+      if (e.target.dataset.holidayId > 0) {
+        if (e.target.classList.contains("first")) {
+          this.isOpenAM = !this.isOpenAM;
+        } else {
+          this.isOpenPM = !this.isOpenPM;
+        }
+
+        this.asyncMethod(e.target.dataset.holidayId);
+
         return;
       }
 
-      const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+      const dayPart = e.target.classList.contains("first") ? "AM" : "PM";
 
-      this.$emit('onDayClick', {
+      this.$emit("onDayClick", {
         from: dayNode.dataset.date,
         fromDayPart: dayPart,
         to: dayNode.dataset.date,
-        toDayPart: dayPart,
+        toDayPart: dayPart
       });
     },
+    asyncMethod(id) {
+      if (id) {
+        const self = this;
+
+        return axios
+          .get("http://www.mocky.io/v2/5cdb0c3b3000005e0068cb8d")
+          .then(({ data }) => {
+            self.tooltipContent = data.response;
+          });
+      }
+
+      return "tooltip";
+    }
   },
-  computed: {},
+  computed: {
+    isPast() {
+      return moment(this.$props.day.format).isBefore(getCurrentDate());
+    }
+  }
 };
 </script>
 
@@ -88,6 +132,11 @@ export default {
 
   &.non-working {
     background-color: rgba(#000, 0.2);
+  }
+
+  &[data-is-past] {
+    pointer-events: none;
+    opacity: 0.5;
   }
 
   .half {
@@ -144,7 +193,7 @@ export default {
 [data-current] {
   .day-index {
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
