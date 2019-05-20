@@ -11,12 +11,9 @@
       :class="day.holiday.am_type"
       :data-holiday-id="day.holiday.am_hol_id"
       :data-title="day.holiday.am_name"
-      v-tooltip="{
-        trigger: 'manual',
-        show: isOpenAM,
-        content: tooltipContent
-      }"
-    ></div>
+    >
+      <div class="tooltip_c" v-show="isOpenAM" v-html="tooltipContent"></div>
+    </div>
 
     <div class="day-index">{{ day.id }}</div>
 
@@ -25,33 +22,30 @@
       :class="day.holiday.pm_type"
       :data-holiday-id="day.holiday.pm_hol_id"
       :data-title="day.holiday.pm_name"
-      v-tooltip="{
-        trigger: 'manual',
-        show: isOpenPM,
-        content: tooltipContent
-      }"
-    ></div>
+    >
+      <div class="tooltip_c" v-show="isOpenPM" v-html="tooltipContent"></div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import moment from "moment";
-import { getCurrentDate } from "../helpers/date";
+import axios from 'axios';
+import moment from 'moment';
+import { getCurrentDate } from '../helpers/date';
 
 export default {
-  name: "Day",
+  name: 'Day',
   props: {
     day: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       isOpenAM: false,
       isOpenPM: false,
-      tooltipContent: null
+      tooltipContent: `<span class="loading-msg">loading ...</span>`,
     };
   },
   mounted() {},
@@ -60,7 +54,7 @@ export default {
       const dayNode = e.target.parentNode;
 
       if (
-        dayNode.classList.contains("non-working") ||
+        dayNode.classList.contains('non-working') ||
         moment(dayNode.dataset.date).isBefore(getCurrentDate()) ||
         !dayNode.dataset.date
       ) {
@@ -68,7 +62,7 @@ export default {
       }
 
       if (e.target.dataset.holidayId > 0) {
-        if (e.target.classList.contains("first")) {
+        if (e.target.classList.contains('first')) {
           this.isOpenAM = !this.isOpenAM;
         } else {
           this.isOpenPM = !this.isOpenPM;
@@ -79,38 +73,58 @@ export default {
         return;
       }
 
-      const dayPart = e.target.classList.contains("first") ? "AM" : "PM";
+      const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
-      this.$emit("onDayClick", {
+      this.$emit('onDayClick', {
         from: dayNode.dataset.date,
         fromDayPart: dayPart,
         to: dayNode.dataset.date,
-        toDayPart: dayPart
+        toDayPart: dayPart,
       });
     },
     asyncMethod(id) {
       if (id) {
         const self = this;
 
-        return axios
-          .get("http://www.mocky.io/v2/5cdb0c3b3000005e0068cb8d")
-          .then(({ data }) => {
-            self.tooltipContent = data.response;
-          });
+        return axios.get('http://www.mocky.io/v2/5ce24deb340000a30c7732e3').then(({ data }) => {
+          self.tooltipContent = `
+            <div>Type: ${data.type}</div>
+            <div>Date: ${data.date}</div>
+            <div>BookedDate: ${data.bookedDate}</div>
+          `;
+        });
       }
 
-      return "tooltip";
-    }
+      return 'tooltip';
+    },
   },
   computed: {
     isPast() {
       return moment(this.$props.day.format).isBefore(getCurrentDate());
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss">
+.tooltip_c {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 240px;
+  padding: 5px 10px;
+  text-align: left;
+  color: #fff;
+  background-color: rgba(#000, 0.8);
+
+  .loading-msg {
+    display: block;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
 .day {
   position: relative;
   display: flex;
@@ -152,7 +166,7 @@ export default {
       display: none;
       content: attr(data-title);
       position: absolute;
-      top: 100%;
+      top: calc(100% + 5px);
       left: 50%;
       z-index: 1;
       transform: translateX(-50%);
@@ -193,7 +207,7 @@ export default {
 [data-current] {
   .day-index {
     &::after {
-      content: "";
+      content: '';
       position: absolute;
       top: 50%;
       left: 50%;
