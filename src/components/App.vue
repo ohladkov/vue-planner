@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Planner from './components/Planner.vue';
+import Planner from './Planner.vue';
 
 export default {
   name: 'app',
