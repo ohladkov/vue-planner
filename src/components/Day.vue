@@ -1,29 +1,43 @@
 <template>
-  <div
-    class="day"
-    :class="{ 'non-working': day.nonWorkingDay.id }"
-    :data-date="day.format"
-    :data-is-past="isPast"
-    @click="onClick"
-  >
+  <div 
+    class="day" 
+    :data-date="day.format" 
+    :data-is-past="isPast" 
+    @click="onClick">
     <div
       class="half first"
-      :class="day.holiday.am_type"
+      :class="[
+        day.nonWorkingDay.id ? 'nwd' : '',
+        isOpenAM ? 'isOpen' : '',
+        day.holiday.am_type
+      ]"
       :data-holiday-id="day.holiday.am_hol_id"
       :data-title="day.holiday.am_name"
     >
-      <div class="tooltip_c" v-show="isOpenAM" v-html="tooltipContent"></div>
+      <div 
+        class="tooltip_c" 
+        v-show="isOpenAM" 
+        v-html="tooltipContent"
+      ></div>
     </div>
 
     <div class="day-index">{{ day.id }}</div>
 
     <div
       class="half second"
-      :class="day.holiday.pm_type"
+      :class="[
+        day.nonWorkingDay.id ? 'nwd' : '', 
+        isOpenPM ? 'isOpen' : '', 
+        day.holiday.pm_type
+      ]"
       :data-holiday-id="day.holiday.pm_hol_id"
       :data-title="day.holiday.pm_name"
     >
-      <div class="tooltip_c" v-show="isOpenPM" v-html="tooltipContent"></div>
+      <div 
+        class="tooltip_c" 
+        v-show="isOpenPM" 
+        v-html="tooltipContent"
+      ></div>
     </div>
   </div>
 </template>
@@ -54,7 +68,7 @@ export default {
       const dayNode = e.target.parentNode;
 
       if (
-        dayNode.classList.contains('non-working') ||
+        e.target.classList.contains('nwd') ||
         moment(dayNode.dataset.date).isBefore(getCurrentDate()) ||
         !dayNode.dataset.date
       ) {
@@ -130,12 +144,13 @@ export default {
   display: flex;
   width: calc(100% / var(--daysInWeek));
   min-height: 40px;
+  user-select: none;
 
   &-index {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -144,13 +159,13 @@ export default {
     pointer-events: none;
   }
 
-  &.non-working {
-    background-color: rgba(#000, 0.2);
-  }
-
   &[data-is-past] {
     pointer-events: none;
     opacity: 0.5;
+  }
+
+  &:hover {
+    z-index: 2;
   }
 
   .half {
@@ -176,12 +191,16 @@ export default {
       background-color: rgba(#000, 0.9);
     }
 
-    &[data-title] {
+    &[data-title]:not(.isOpen) {
       &:hover {
         &::after {
           display: block;
         }
       }
+    }
+
+    &.nwd {
+      background-color: rgba(#000, 0.2);
     }
 
     &.holiday {
@@ -190,6 +209,10 @@ export default {
 
     &.sickness {
       background-color: rgba(red, 0.7);
+    }
+
+    &.selected {
+      background-color: lightblue;
     }
   }
 

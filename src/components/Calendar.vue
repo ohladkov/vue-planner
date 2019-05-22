@@ -26,10 +26,17 @@ export default {
       title: 'Planner',
       year: null,
       months: [],
-      bookData: {},
+      bookData: {
+        from: null,
+        fromDayPart: null,
+        to: null,
+        toDayPart: null,
+      },
     };
   },
   mounted() {
+    const self = this;
+
     axios
       .get('http://www.mocky.io/v2/5ce264ea3400007d047733b0')
       .then(({ data }) => {
@@ -40,6 +47,49 @@ export default {
       })
       .then(() => setScrollBarWidth())
       .then(() => setCurrentDate());
+
+    let selectionFlag = false;
+
+    document.addEventListener('mousedown', (e) => {
+      if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
+
+      selectionFlag = true;
+      self.bookData.from = e.target.parentNode.dataset.date;
+      self.bookData.fromDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+
+      e.target.classList.add('selected');
+    });
+
+    document.addEventListener('mouseover', (e) => {
+      if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) {
+        removeSelection();
+        selectionFlag = false;
+
+        return;
+      }
+
+      if (selectionFlag) {
+        e.target.classList.add('selected');
+      }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
+
+      selectionFlag = false;
+      self.bookData.to = e.target.parentNode.dataset.date;
+      self.bookData.toDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+
+      removeSelection();
+
+      this.toggleModal();
+    });
+
+    const removeSelection = () => {
+      document.querySelectorAll('.days-list .selected').forEach((el) => {
+        el.classList.remove('selected');
+      });
+    };
   },
   methods: {
     onClick(e) {
