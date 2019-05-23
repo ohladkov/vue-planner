@@ -16,14 +16,14 @@ export default {
   },
   data() {
     return {
-      isOverlayVisible: false
-    }
+      isOverlayVisible: false,
+    };
   },
   methods: {
     toggleOverlay() {
       this.isOverlayVisible = !this.isOverlayVisible;
-    }
-  }
+    },
+  },
 };
 </script>
 

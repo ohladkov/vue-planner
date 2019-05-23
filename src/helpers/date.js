@@ -1,15 +1,23 @@
+import moment from 'moment';
+
+export const DATE_FORMAT = 'YYYY-M-D';
+
+export const dateToIsoString = (date) => {
+  return moment(date, DATE_FORMAT).toISOString();
+};
+
 export const getCurrentDate = () => {
-  const today = new Date();
+  const today = moment(new Date());
 
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
+  const year = today.format('YYYY');
+  const month = today.format('M');
+  const day = today.format('D');
 
-  return `${year}-${month}-${day}`;
+  return dateToIsoString(`${year}-${month}-${day}`);
 };
 
 export const setCurrentDate = () => {
-  const today = getCurrentDate();
+  const today = moment(getCurrentDate()).format(DATE_FORMAT);
 
   const todayEl = document.querySelector(`[data-date="${today}"]`);
   todayEl.dataset.current = true;

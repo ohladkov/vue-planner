@@ -58,8 +58,8 @@ export default {
     //   if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
 
     //   selectionFlag = true;
-    //   self.bookData.from = e.target.parentNode.dataset.date;
-    //   self.bookData.fromDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+    //   self.modalData.from = e.target.parentNode.dataset.date;
+    //   self.modalData.fromDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
     //   e.target.classList.add('selected');
     // });
@@ -81,8 +81,8 @@ export default {
     //   if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
 
     //   selectionFlag = false;
-    //   self.bookData.to = e.target.parentNode.dataset.date;
-    //   self.bookData.toDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
+    //   self.modalData.to = e.target.parentNode.dataset.date;
+    //   self.modalData.toDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
     //   removeSelection();
 

@@ -21,7 +21,7 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
-import { getCurrentDate } from '../helpers/date';
+import { getCurrentDate, dateToIsoString } from '../helpers/date';
 
 export default {
   name: 'Day',
@@ -41,7 +41,6 @@ export default {
 
       if (
         e.target.classList.contains('nwd') ||
-        moment(dayNode.dataset.date).isBefore(getCurrentDate()) ||
         !dayNode.dataset.date
       ) {
         return;
@@ -49,20 +48,15 @@ export default {
 
       if (e.target.dataset.holidayId) {
         return axios.get('http://www.mocky.io/v2/5ce24deb340000a30c7732e3').then(({ data }) => {
-
-          const {
-            bookedDate,
-            date,
-            type
-          } = data;
+          const { bookedDate, date, type } = data;
 
           this.$emit('onDayClick', {
             type: 'book-info',
             bookingContent: {
               bookedDate,
               date,
-              type
-            }
+              type,
+            },
           });
         });
       }
@@ -76,11 +70,11 @@ export default {
         to: dayNode.dataset.date,
         toDayPart: dayPart,
       });
-    }
+    },
   },
   computed: {
     isPast() {
-      return moment(this.$props.day.format).isBefore(getCurrentDate());
+      return moment(dateToIsoString(this.$props.day.format)).isBefore(getCurrentDate());
     },
   },
 };

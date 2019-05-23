@@ -92,7 +92,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import moment from 'moment';
-import { getCurrentDate } from '../helpers/date';
+import { getCurrentDate, dateToIsoString } from '../helpers/date';
 
 export default {
   name: 'Modal',
@@ -165,12 +165,12 @@ export default {
   },
   watch: {
     modalData(newVal) {
-      if (moment(newVal.from).isBefore(this.currentDate)) {
+      if (moment(dateToIsoString(newVal.from)).isBefore(dateToIsoString(this.currentDate))) {
         return;
       }
 
-      this.bookForm.from = moment(newVal.from).toDate();
-      this.bookForm.to = moment(newVal.to).toDate();
+      this.bookForm.from = moment(dateToIsoString(newVal.from)).toDate();
+      this.bookForm.to = moment(dateToIsoString(newVal.to)).toDate();
 
       this.bookForm.fromDayPartSelected = newVal.fromDayPart;
       this.bookForm.toDayPartSelected = newVal.toDayPart;
