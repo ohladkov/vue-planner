@@ -1,44 +1,20 @@
 <template>
-  <div 
-    class="day" 
-    :data-date="day.format" 
-    :data-is-past="isPast" 
-    @click="onClick">
+  <div class="day" :data-date="day.format" :data-is-past="isPast" @click="onClick">
     <div
       class="half first"
-      :class="[
-        day.nonWorkingDay.id ? 'nwd' : '',
-        isOpenAM ? 'isOpen' : '',
-        day.holiday.am_type
-      ]"
+      :class="[day.nonWorkingDay.id ? 'nwd' : '', day.holiday.am_type]"
       :data-holiday-id="day.holiday.am_hol_id"
       :data-title="day.holiday.am_name"
-    >
-      <div 
-        class="tooltip_c" 
-        v-show="isOpenAM" 
-        v-html="tooltipContent"
-      ></div>
-    </div>
+    ></div>
 
     <div class="day-index">{{ day.id }}</div>
 
     <div
       class="half second"
-      :class="[
-        day.nonWorkingDay.id ? 'nwd' : '', 
-        isOpenPM ? 'isOpen' : '', 
-        day.holiday.pm_type
-      ]"
+      :class="[day.nonWorkingDay.id ? 'nwd' : '', day.holiday.pm_type]"
       :data-holiday-id="day.holiday.pm_hol_id"
       :data-title="day.holiday.pm_name"
-    >
-      <div 
-        class="tooltip_c" 
-        v-show="isOpenPM" 
-        v-html="tooltipContent"
-      ></div>
-    </div>
+    ></div>
   </div>
 </template>
 
@@ -56,11 +32,7 @@ export default {
     },
   },
   data() {
-    return {
-      isOpenAM: false,
-      isOpenPM: false,
-      tooltipContent: `<span class="loading-msg">loading ...</span>`,
-    };
+    return {};
   },
   mounted() {},
   methods: {
@@ -75,42 +47,36 @@ export default {
         return;
       }
 
-      if (e.target.dataset.holidayId > 0) {
-        if (e.target.classList.contains('first')) {
-          this.isOpenAM = !this.isOpenAM;
-        } else {
-          this.isOpenPM = !this.isOpenPM;
-        }
+      if (e.target.dataset.holidayId) {
+        return axios.get('http://www.mocky.io/v2/5ce24deb340000a30c7732e3').then(({ data }) => {
 
-        this.asyncMethod(e.target.dataset.holidayId);
+          const {
+            bookedDate,
+            date,
+            type
+          } = data;
 
-        return;
+          this.$emit('onDayClick', {
+            type: 'book-info',
+            bookingContent: {
+              bookedDate,
+              date,
+              type
+            }
+          });
+        });
       }
 
       const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
 
       this.$emit('onDayClick', {
+        type: 'book-form',
         from: dayNode.dataset.date,
         fromDayPart: dayPart,
         to: dayNode.dataset.date,
         toDayPart: dayPart,
       });
-    },
-    asyncMethod(id) {
-      if (id) {
-        const self = this;
-
-        return axios.get('http://www.mocky.io/v2/5ce24deb340000a30c7732e3').then(({ data }) => {
-          self.tooltipContent = `
-            <div>Type: ${data.type}</div>
-            <div>Date: ${data.date}</div>
-            <div>BookedDate: ${data.bookedDate}</div>
-          `;
-        });
-      }
-
-      return 'tooltip';
-    },
+    }
   },
   computed: {
     isPast() {

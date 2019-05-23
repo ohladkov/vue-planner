@@ -3,11 +3,11 @@
     <div class="modal-box">
       <button type="button" class="modal-close">&nbsp;</button>
 
-      <div class="title">
-        Book time off
-      </div>
+      <div class="book-form-wrapper" v-if="modalData.type !== 'book-info'">
+        <div class="title">
+          Book time off
+        </div>
 
-      <div class="book-form-wrapper">
         <form @submit.prevent="onSubmit" action="#" autocomplete="off" class="book-form">
           <div class="book-form__inner">
             <div class="book-form__row-wrapper">
@@ -77,6 +77,14 @@
           </div>
         </form>
       </div>
+
+      <div class="booking-info" v-else>
+        <div>Type: {{modalData.bookingContent.type}}</div>
+        <div>Date: {{modalData.bookingContent.date}}</div>
+        <div>BookedDate: {{modalData.bookingContent.bookedDate}}</div>
+
+        <button type="button">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
@@ -89,7 +97,7 @@ import { getCurrentDate } from '../helpers/date';
 export default {
   name: 'Modal',
   props: {
-    bookData: {
+    modalData: {
       type: Object,
       required: true,
     },
@@ -156,7 +164,7 @@ export default {
     },
   },
   watch: {
-    bookData(newVal) {
+    modalData(newVal) {
       if (moment(newVal.from).isBefore(this.currentDate)) {
         return;
       }
