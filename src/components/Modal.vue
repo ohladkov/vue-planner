@@ -73,17 +73,26 @@
               </div>
             </div>
 
-            <button type="submit" class="book-submit">Send Request</button>
+            <button type="submit" class="btn btn--submit">Send Request</button>
           </div>
         </form>
       </div>
 
       <div class="booking-info" v-else>
-        <div>Type: {{modalData.bookingContent.type}}</div>
-        <div>Date: {{modalData.bookingContent.date}}</div>
-        <div>BookedDate: {{modalData.bookingContent.bookedDate}}</div>
+        <div class="booking-info__item">
+          <strong>Type:</strong>
+          {{ modalData.bookingContent.type }}
+        </div>
+        <div class="booking-info__item">
+          <strong>Date:</strong>
+          {{ modalData.bookingContent.date }}
+        </div>
+        <div class="booking-info__item">
+          <strong>BookedDate:</strong>
+          {{ modalData.bookingContent.bookedDate }}
+        </div>
 
-        <button type="button">Cancel</button>
+        <button type="button" class="btn btn--cancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -284,6 +293,40 @@ export default {
 
     &::placeholder {
       font-style: italic;
+    }
+  }
+}
+
+.booking-info {
+  padding: 50px 0;
+
+  &__item {
+    margin-bottom: 10px;
+  }
+}
+
+.btn {
+  min-width: 160px;
+  min-height: 40px;
+  padding: 5px 15px;
+  font-size: 14px;
+  color: #fff;
+  border: 0;
+  border-radius: 4px;
+  background-color: #28a745;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: darken(#28a745, 5);
+  }
+
+  &--cancel {
+    background-color: #dc3545;
+
+    &:hover {
+      background-color: darken(#dc3545, 5);
     }
   }
 }
