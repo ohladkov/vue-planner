@@ -19,7 +19,7 @@ import Modal from './Modal';
 import { setCurrentDate } from '../helpers/date';
 import { setScrollBarWidth } from '../helpers/utils';
 
-const url = 'http://www.mocky.io/v2/5ce648133300004a007313d2';
+const url = 'http://www.mocky.io/v2/5cffb6843200007f00eac938';
 
 export default {
   name: 'Calendar',
@@ -39,8 +39,6 @@ export default {
     };
   },
   mounted() {
-    // const self = this;
-
     axios
       .get(url)
       .then(({ data }) => {
@@ -51,49 +49,6 @@ export default {
       })
       .then(() => setScrollBarWidth())
       .then(() => setCurrentDate());
-
-    // let selectionFlag = false;
-
-    // document.addEventListener('mousedown', (e) => {
-    //   if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
-
-    //   selectionFlag = true;
-    //   self.modalData.from = e.target.parentNode.dataset.date;
-    //   self.modalData.fromDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
-
-    //   e.target.classList.add('selected');
-    // });
-
-    // document.addEventListener('mouseover', (e) => {
-    //   if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) {
-    //     removeSelection();
-    //     selectionFlag = false;
-
-    //     return;
-    //   }
-
-    //   if (selectionFlag) {
-    //     e.target.classList.add('selected');
-    //   }
-    // });
-
-    // document.addEventListener('mouseup', (e) => {
-    //   if (!e.target.classList.contains('half') || e.target.dataset.holidayId > 0) return;
-
-    //   selectionFlag = false;
-    //   self.modalData.to = e.target.parentNode.dataset.date;
-    //   self.modalData.toDayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
-
-    //   removeSelection();
-
-    //   this.toggleModal();
-    // });
-
-    // const removeSelection = () => {
-    //   document.querySelectorAll('.days-list .selected').forEach((el) => {
-    //     el.classList.remove('selected');
-    //   });
-    // };
   },
   methods: {
     onClick(e) {
