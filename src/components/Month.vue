@@ -5,9 +5,7 @@
     <Week />
 
     <div class="days-list">
-      <div class="day day--offset" v-for="day in month.monthStart" :key="'offsetday: ' + day">&nbsp;</div>
-
-      <Day v-for="day in daysList" :key="day.id" :day="day" @onDayClick="onDayClick" />
+      <Day v-for="day in daysList" :key="day.id" :day="day" />
     </div>
   </div>
 </template>
@@ -15,6 +13,7 @@
 <script>
 import Week from './Week';
 import Day from './Day';
+import { getDaysOffset, getDaysInMonth } from '../helpers/dateUtils';
 
 export default {
   name: 'Month',
@@ -23,67 +22,52 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  data() {
-    return {};
-  },
-  methods: {
-    onDayClick(data) {
-      this.$emit('toggleModal', data);
+    year: {
+      required: true,
     },
-    formatDate(day) {
-      const { year, monthNum } = this.$props.month;
-
-      return `${year}-${monthNum}-${day}`;
-    },
-  },
-  computed: {
-    daysList() {
-      const { days, nonWorkingDays, holidays } = this.$props.month;
-
-      const daysList = [];
-      const parsedHolidays = {};
-
-      for (const [, val] of Object.entries(holidays)) {
-        parsedHolidays[val.day] = val;
-      }
-
-      for (let i = 1; i <= days; i++) {
-        const dayObj = {
-          id: i,
-          format: this.formatDate(i),
-          nonWorkingDay: {},
-          holiday: {},
-        };
-
-        if (nonWorkingDays.length) {
-          nonWorkingDays.forEach((nonWorkingDay) => {
-            if (i === nonWorkingDay.day) {
-              dayObj.nonWorkingDay.id = nonWorkingDay.day;
-              dayObj.nonWorkingDay.name = nonWorkingDay.name;
-              dayObj.nonWorkingDay.dayPart = nonWorkingDay.dayPart;
-            }
-          });
-        }
-
-        Object.values(parsedHolidays).map((holiday) => {
-          if (i === holiday.day) {
-            dayObj.holiday = holiday;
-          }
-        });
-
-        daysList.push(dayObj);
-      }
-
-      return daysList;
-    },
-    offsetDays() {
-      return this.month.monthStart;
+    monthNum: {
+      type: Number,
+      required: true,
     },
   },
   components: {
     Week,
     Day,
+  },
+  data() {
+    return {
+      id: null,
+      name: null,
+      days: {},
+    };
+  },
+  mounted() {},
+  methods: {},
+  computed: {
+    daysList() {
+      const { year, monthNum } = this.$props;
+      const days = getDaysInMonth(year, monthNum);
+      const offsetDays = getDaysOffset(new Date(year, monthNum));
+
+      const daysList = [];
+
+      for (let i = -offsetDays; i <= days; i++) {
+        const day = {
+          id: i,
+        };
+
+        if (i <= 0) {
+          day.isEmpty = true;
+        }
+
+        daysList.push(day);
+      }
+
+      return daysList;
+    },
+    offsetDays() {
+      return {};
+    },
   },
 };
 </script>

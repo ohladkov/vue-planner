@@ -1,28 +1,30 @@
 <template>
   <div class="planner">
-    <Calendar @toggleOverlay="toggleOverlay" />
+    <Calendar />
 
-    <div id="overlay" v-show="isOverlayVisible" @click="isOverlayVisible = false"></div>
+    <Modal :type="modalType" />
   </div>
 </template>
 
 <script>
 import Calendar from './Calendar';
+import Modal from './Modal';
 
 export default {
   name: 'Planner',
   components: {
     Calendar,
+    Modal
   },
   data() {
     return {
-      isOverlayVisible: false,
+      modalType: null,
     };
   },
-  methods: {
-    toggleOverlay() {
-      this.isOverlayVisible = !this.isOverlayVisible;
-    },
+  mounted() {
+    this.$eventBus.$on('showModal', (payload) => {
+      this.modalType = payload.type;
+    });
   },
 };
 </script>

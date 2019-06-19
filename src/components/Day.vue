@@ -1,27 +1,39 @@
 <template>
-  <div class="day" :data-date="day.format" :data-is-past="isPast" @click="onClick">
-    <div
-      class="half first"
-      :class="[day.nonWorkingDay.id ? 'nwd' : '', day.holiday.am_type]"
-      :data-holiday-id="day.holiday.am_hol_id"
-      :data-title="day.holiday.am_name"
-    ></div>
 
-    <div class="day-index">{{ day.id }}</div>
+  <div 
+    v-if="day.isEmpty"
+    class="day" 
+    data-empty
+  ></div>
 
-    <div
-      class="half second"
-      :class="[day.nonWorkingDay.id ? 'nwd' : '', day.holiday.pm_type]"
-      :data-holiday-id="day.holiday.pm_hol_id"
-      :data-title="day.holiday.pm_name"
-    ></div>
+  <div 
+    v-else
+    class="day" 
+    data-toggle="modal"
+    data-target="#bookModal"
+    @click="onClick"
+  >
+    <button 
+      type="button" 
+      class="half first" 
+      data-type="booking"
+    ></button>
+
+    <div class="day-index">
+      {{ day.id }}
+    </div>
+
+    <button 
+      type="button" 
+      class="half last" 
+      data-type="events"
+    ></button>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 import moment from 'moment';
-import { getCurrentDate, dateToIsoString } from '../helpers/date';
+import { getCurrentDate, dateToIsoString } from '../helpers/dateUtils';
 
 export default {
   name: 'Day',
@@ -34,42 +46,17 @@ export default {
   data() {
     return {};
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
     onClick(e) {
-      const dayNode = e.target.parentNode;
+      const { type } = e.target.dataset;
 
-      if (
-        e.target.classList.contains('nwd') ||
-        !dayNode.dataset.date
-      ) {
-        return;
-      }
+      const payload = {
+        type
+      };
 
-      if (e.target.dataset.holidayId) {
-        return axios.get('http://www.mocky.io/v2/5ce24deb340000a30c7732e3').then(({ data }) => {
-          const { bookedDate, date, type } = data;
-
-          this.$emit('onDayClick', {
-            type: 'book-info',
-            bookingContent: {
-              bookedDate,
-              date,
-              type,
-            },
-          });
-        });
-      }
-
-      const dayPart = e.target.classList.contains('first') ? 'AM' : 'PM';
-
-      this.$emit('onDayClick', {
-        type: 'book-form',
-        from: dayNode.dataset.date,
-        fromDayPart: dayPart,
-        to: dayNode.dataset.date,
-        toDayPart: dayPart,
-      });
+      this.$eventBus.$emit('showModal', payload);
     },
   },
   computed: {
@@ -81,24 +68,6 @@ export default {
 </script>
 
 <style lang="scss">
-.tooltip_c {
-  position: absolute;
-  bottom: calc(100% + 5px);
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 240px;
-  padding: 5px 10px;
-  text-align: left;
-  color: #fff;
-  background-color: rgba(#000, 0.8);
-
-  .loading-msg {
-    display: block;
-    text-align: center;
-    white-space: nowrap;
-  }
-}
-
 .day {
   position: relative;
   display: flex;
@@ -119,19 +88,30 @@ export default {
     pointer-events: none;
   }
 
-  &[data-is-past] {
+  &[data-is-past],
+  &[data-empty] {
     pointer-events: none;
     opacity: 0.5;
   }
 
   &:hover {
     z-index: 2;
+    outline: 1px solid rgba(#000, 0.025);
   }
 
   .half {
     position: relative;
     width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
     transition: background-color 0.3s;
+    appearance: none;
+
+    &:focus {
+      outline: 0;
+    }
 
     &:hover {
       background-color: rgba(#000, 0.1);

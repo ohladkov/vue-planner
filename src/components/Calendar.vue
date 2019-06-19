@@ -1,81 +1,53 @@
 <template>
-  <div id="calendar" @click="onClick">
+  <div id="calendar">
     <h1>
       {{ title }}
       <span>{{ year }}</span>
     </h1>
-    <div class="months">
-      <Month v-for="month in months" :key="month.name" :month="month" @toggleModal="toggleModal" />
-    </div>
 
-    <Modal :modalData="modalData" />
+    <div class="months">
+      <Month v-for="(month, index) in months" :key="month.name" :month="month" :monthNum="index" :year="year" />
+    </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import { Api } from '../api/api';
 import Month from './Month';
-import Modal from './Modal';
-import { setCurrentDate } from '../helpers/date';
-import { setScrollBarWidth } from '../helpers/utils';
-
-const url = 'http://www.mocky.io/v2/5cffb6843200007f00eac938';
+import { months } from '../helpers/constants';
 
 export default {
   name: 'Calendar',
+  components: {
+    Month,
+  },
   data() {
     return {
       title: 'Planner',
       year: null,
-      months: [],
-      modalData: {
-        type: null,
-        from: null,
-        fromDayPart: null,
-        to: null,
-        toDayPart: null,
-        bookingContent: {},
-      },
+      months,
     };
   },
   mounted() {
-    axios
-      .get(url)
-      .then(({ data }) => {
-        if (data.success) {
-          this.year = data.year;
-          data.months.forEach((month) => this.months.push(month));
-        }
-      })
-      .then(() => setScrollBarWidth())
-      .then(() => setCurrentDate());
+    this.setData();
   },
   methods: {
-    onClick(e) {
-      if (e.target.classList.contains('modal') || e.target.classList.contains('modal-close')) {
-        this.toggleModal();
+    async setData() {
+      const response = await Api.get('planner');
+
+      if (!response.isSuccess()) return;
+
+      const data = await response.getData();
+
+      this.year = data.year;
+
+      if (data.months) {
+        this.year = data.year;
+        data.months.forEach((month) => this.months.push(month));
       }
+
+      return data;
     },
-    toggleModal(data) {
-      this.isModalVisible = !this.isModalVisible;
-
-      if (!this.isModalVisible) {
-        document.body.classList.remove('modal-open');
-
-        return;
-      }
-
-      this.modalData = {
-        ...this.modalData,
-        ...data,
-      };
-
-      document.body.classList.add('modal-open');
-    },
-  },
-  components: {
-    Month,
-    Modal,
   },
 };
 </script>

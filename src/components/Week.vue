@@ -1,15 +1,17 @@
 <template>
   <div class="week">
-    <div class="week-day" v-for="day in days" :key="day">{{ day }}</div>
+    <div class="week-day" v-for="day in week" :key="day">{{ day }}</div>
   </div>
 </template>
 
 <script>
+import { week } from '../helpers/constants';
+
 export default {
   name: 'Week',
   data() {
     return {
-      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      week,
     };
   },
 };

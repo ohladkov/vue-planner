@@ -22,3 +22,14 @@ export const setCurrentDate = () => {
   const todayEl = document.querySelector(`[data-date="${today}"]`);
   todayEl.dataset.current = true;
 };
+
+export const getDaysInMonth = (year, month) => {
+  return new Date(year, month + 1, 0).getDate();
+};
+
+export const getDaysOffset = (date = new Date()) => {
+  const day = new Date(date).getDay();
+  const convertedDay = day !== 0 ? day : 7;
+
+  return convertedDay - 2;
+};
