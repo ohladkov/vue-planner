@@ -13,7 +13,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select class="form-control" id="type">
+                <select class="form-control" id="type" name="type">
                   <option>1</option>
                   <option>2</option>
                   <option>3</option>
@@ -28,13 +28,13 @@
                 <div class="col-md-7">
                   <div class="form-group">
                     <label for="from">Starting</label>
-                    <input class="form-control" type="text" id="from" placeholder="From" />
+                    <input class="form-control" type="text" id="from" name="from" placeholder="From" />
                   </div>
                 </div>
                 <div class="col-md-5">
                   <div class="form-group">
                     <label for="from-day-part">&nbsp;</label>
-                    <select class="form-control" id="from-day-part">
+                    <select class="form-control" id="from-day-part" name="from-day-part">
                       <option>1</option>
                       <option>2</option>
                       <option>3</option>
@@ -51,13 +51,13 @@
                 <div class="col-md-7">
                   <div class="form-group">
                     <label for="to">Ending</label>
-                    <input class="form-control" type="text" id="to" placeholder="To" />
+                    <input class="form-control" type="text" id="to" name="to" placeholder="To" />
                   </div>
                 </div>
                 <div class="col-md-5">
                   <div class="form-group">
                     <label for="to-day-part">&nbsp;</label>
-                    <select class="form-control" id="to-day-part">
+                    <select class="form-control" id="to-day-part" name="to-day-part">
                       <option>1</option>
                       <option>2</option>
                       <option>3</option>
@@ -72,7 +72,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="reason">Reason</label>
-                <textarea class="form-control" id="reason" rows="3" placeholder="Reason for time of..."></textarea>
+                <textarea class="form-control" id="reason" rows="3" name="reason" placeholder="Reason for time of..."></textarea>
               </div>
             </div>
           </div>

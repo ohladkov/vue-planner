@@ -1,5 +1,4 @@
 <template>
-
   <div 
     v-if="day.isEmpty"
     class="day" 
@@ -8,33 +7,29 @@
 
   <div 
     v-else
+    :data-date="day.date"
+    @click="onClick"
     class="day" 
     data-toggle="modal"
     data-target="#bookModal"
-    @click="onClick"
   >
-    <button 
-      type="button" 
+    <div 
       class="half first" 
       data-type="booking"
-    ></button>
+    ></div>
 
     <div class="day-index">
       {{ day.id }}
     </div>
 
-    <button 
-      type="button" 
+    <div 
       class="half last" 
       data-type="events"
-    ></button>
+    ></div>
   </div>
 </template>
 
 <script>
-import moment from 'moment';
-import { getCurrentDate, dateToIsoString } from '../helpers/dateUtils';
-
 export default {
   name: 'Day',
   props: {
@@ -57,11 +52,6 @@ export default {
       };
 
       this.$eventBus.$emit('showModal', payload);
-    },
-  },
-  computed: {
-    isPast() {
-      return moment(dateToIsoString(this.$props.day.format)).isBefore(getCurrentDate());
     },
   },
 };

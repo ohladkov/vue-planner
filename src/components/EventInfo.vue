@@ -8,7 +8,7 @@
     </div>
     <div class="modal-body">
       <form action="#" id="event-form">
-        <input type="hidden" name="event-id" value="1">
+        <input type="hidden" name="event-id">
         <div class="container">
           <div class="row">
             <div class="col-md-3">

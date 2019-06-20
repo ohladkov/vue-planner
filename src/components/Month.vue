@@ -22,11 +22,13 @@ export default {
       type: Object,
       required: true,
     },
-    year: {
-      required: true,
+    events: {
+      type: Array,
     },
-    monthNum: {
-      type: Number,
+    specialEvents: {
+      type: Array,
+    },
+    year: {
       required: true,
     },
   },
@@ -41,13 +43,12 @@ export default {
       days: {},
     };
   },
-  mounted() {},
-  methods: {},
   computed: {
     daysList() {
-      const { year, monthNum } = this.$props;
-      const days = getDaysInMonth(year, monthNum);
-      const offsetDays = getDaysOffset(new Date(year, monthNum));
+      const { year, month } = this.$props;
+      const monthId = month.id;
+      const days = getDaysInMonth(year, monthId);
+      const offsetDays = getDaysOffset(year, monthId);
 
       const daysList = [];
 
@@ -58,15 +59,15 @@ export default {
 
         if (i <= 0) {
           day.isEmpty = true;
+        } else {
+          const dateFormat = `${year}-${monthId}-${i}`;
+          day.date = dateFormat;
         }
 
         daysList.push(day);
       }
 
       return daysList;
-    },
-    offsetDays() {
-      return {};
     },
   },
 };
