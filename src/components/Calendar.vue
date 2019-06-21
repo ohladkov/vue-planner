@@ -11,8 +11,8 @@
         :key="month.name"
         :month="month"
         :year="year"
-        :events="eventsDays[index+1]"
-        :specialEvents="specialDays[index+1]"
+        :events="eventsDays[index + 1]"
+        :specialEvents="specialDays[index + 1]"
       />
     </div>
   </div>
@@ -22,6 +22,7 @@
 import Month from './Month';
 import { Api } from '../api/api';
 import { months } from '../helpers/constants';
+import { sortEventsByMonth } from '../helpers/utils';
 
 export default {
   name: 'Calendar',
@@ -57,39 +58,11 @@ export default {
   },
   computed: {
     eventsDays() {
-      const eventsEntries = Object.entries(this.events);
-      const monthEvents = {};
-
-      eventsEntries.forEach((entry) => {
-        const [entryDate] = entry;
-        const month = new Date(entryDate).getMonth() + 1;
-
-        if (!monthEvents[month]) {
-          monthEvents[month] = [];
-        }
-
-        monthEvents[month].push(entry);
-      });
-
-      return monthEvents;
+      return sortEventsByMonth(this.events);
     },
     specialDays() {
-      const specialEntries = Object.entries(this.specialEvents);
-      const specialEvents = {};
-
-      specialEntries.forEach((entry) => {
-        const [entryDate] = entry;
-        const month = new Date(entryDate).getMonth() + 1;
-
-        if (!specialEvents[month]) {
-          specialEvents[month] = [];
-        }
-
-        specialEvents[month].push(entry);
-      });
-
-      return specialEntries;
-    }
+      return sortEventsByMonth(this.specialEvents);
+    },
   },
 };
 </script>

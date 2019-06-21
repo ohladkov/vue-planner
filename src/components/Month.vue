@@ -14,6 +14,7 @@
 import Week from './Week';
 import Day from './Day';
 import { getDaysOffset, getDaysInMonth } from '../helpers/dateUtils';
+import { convertToDoubleDigit } from '../helpers/utils';
 
 export default {
   name: 'Month',
@@ -43,9 +44,11 @@ export default {
       days: {},
     };
   },
+  // updated() {
+  // },
   computed: {
     daysList() {
-      const { year, month } = this.$props;
+      const { year, month, events } = this.$props;
       const monthId = month.id;
       const days = getDaysInMonth(year, monthId);
       const offsetDays = getDaysOffset(year, monthId);
@@ -59,9 +62,22 @@ export default {
 
         if (i <= 0) {
           day.isEmpty = true;
-        } else {
-          const dateFormat = `${year}-${monthId}-${i}`;
-          day.date = dateFormat;
+          daysList.push(day);
+
+          continue;
+        }
+
+        const dateFormat = `${year}-${convertToDoubleDigit(monthId)}-${convertToDoubleDigit(i)}`;
+        day.date = dateFormat;
+
+        if (events && events.length) {
+          events.forEach((entry) => {
+            const [date, event] = entry;
+
+            if (dateFormat === date) {
+              day.events = event;
+            }
+          });
         }
 
         daysList.push(day);

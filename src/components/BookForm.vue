@@ -28,7 +28,14 @@
                 <div class="col-md-7">
                   <div class="form-group">
                     <label for="from">Starting</label>
-                    <input class="form-control" type="text" id="from" name="from" placeholder="From" />
+                    <input
+                      class="form-control datepicker"
+                      type="text"
+                      id="from"
+                      name="from"
+                      placeholder="From"
+                      autocomplete="off"
+                    />
                   </div>
                 </div>
                 <div class="col-md-5">
@@ -51,7 +58,14 @@
                 <div class="col-md-7">
                   <div class="form-group">
                     <label for="to">Ending</label>
-                    <input class="form-control" type="text" id="to" name="to" placeholder="To" />
+                    <input
+                      class="form-control datepicker"
+                      type="text"
+                      id="to"
+                      name="to"
+                      placeholder="To"
+                      autocomplete="off"
+                    />
                   </div>
                 </div>
                 <div class="col-md-5">
@@ -72,7 +86,13 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="reason">Reason</label>
-                <textarea class="form-control" id="reason" rows="3" name="reason" placeholder="Reason for time of..."></textarea>
+                <textarea
+                  class="form-control"
+                  id="reason"
+                  rows="3"
+                  name="reason"
+                  placeholder="Reason for time of..."
+                ></textarea>
               </div>
             </div>
           </div>
@@ -90,6 +110,16 @@ export default {
   name: 'BookForm',
   data() {
     return {};
+  },
+  mounted() {
+    // this.$eventBus.$on('showModal', () => {
+      $('.datepicker').datepicker({
+        dateFormat: 'yy-mm-dd',
+      });
+    // });
+  },
+  beforeDestroy() {
+    $('.datepicker').datepicker('destroy');
   },
 };
 </script>

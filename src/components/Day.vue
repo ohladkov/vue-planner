@@ -7,15 +7,16 @@
 
   <div 
     v-else
-    :data-date="day.date"
+    :data-holiday="holidayTypes"
+    :data-period="holidayPeriod"
     @click="onClick"
     class="day" 
     data-toggle="modal"
     data-target="#bookModal"
   >
     <div 
+      :data-type="dayPeriodType.morning"
       class="half first" 
-      data-type="booking"
     ></div>
 
     <div class="day-index">
@@ -23,8 +24,8 @@
     </div>
 
     <div 
+      :data-type="dayPeriodType.evening"
       class="half last" 
-      data-type="events"
     ></div>
   </div>
 </template>
@@ -37,22 +38,84 @@ export default {
       type: Object,
       required: true,
     },
+    events: {
+      type: Array
+    }
   },
   data() {
     return {};
   },
   mounted() {
   },
+  updated() {
+  },
   methods: {
     onClick(e) {
+      if (!e.target.dataset.type) {
+        this.$eventBus.$emit('showModal', {});
+        return;
+      }
+
       const { type } = e.target.dataset;
+      const { holiday, period } = e.currentTarget.dataset;
 
       const payload = {
-        type
+        type,
+        holiday,
+        period,
+        events: this.allEvents
       };
 
       this.$eventBus.$emit('showModal', payload);
     },
+  },
+  computed: {
+    allEvents() {
+      const { events } = this.$props.day;
+
+      if (events && events.length) {
+        return events;
+      }
+
+      return [];
+    },
+    holidayTypes() {
+      if (this.allEvents.length) {
+        return this.allEvents.map((event) => event.type);
+      }
+
+      return null;
+    },
+    holidayPeriod() {
+      if (this.allEvents.length) {
+        return this.allEvents.map((event) => event.time_period);
+      }
+
+      return null;
+    },
+    dayPeriodType() {
+      const type = {
+        morning: null,
+        evening: null
+      }
+
+      if (this.holidayTypes && this.holidayTypes.length) {
+        if (this.holidayPeriod && this.holidayPeriod.length) {
+          this.holidayPeriod.forEach((period) => {
+            if (period === 'workday') {
+              type.morning = 'event';
+              type.evening = 'event';
+            } else if (period === 'morning') {
+              type.morning = 'event';
+            } else if (period === 'evening') {
+              type.evening = 'event';
+            }
+          });
+        }
+      }
+
+      return type;
+    }
   },
 };
 </script>
@@ -89,6 +152,66 @@ export default {
     outline: 1px solid rgba(#000, 0.025);
   }
 
+  &[data-holiday="holiday"] {
+    --color: green;
+
+    &[data-period="workday"] {
+      background-color: var(--color);
+    }
+
+    &[data-period="morning"] {
+      .first {
+        background-color: var(--color);
+      }
+    }
+
+    &[data-period="evening"] {
+      .last {
+        background-color: var(--color);
+      }
+    }
+  }
+
+  &[data-holiday="day_off"] {
+    --color: orange;
+
+    &[data-period="workday"] {
+      background-color: var(--color);
+    }
+
+    &[data-period="morning"] {
+      .first {
+        background-color: var(--color);
+      }
+    }
+
+    &[data-period="evening"] {
+      .last {
+        background-color: var(--color);
+      }
+    }
+  }
+
+  &[data-holiday="sickness"] {
+    --color: red;
+
+    &[data-period="workday"] {
+      background-color: var(--color);
+    }
+
+    &[data-period="morning"] {
+      .first {
+        background-color: var(--color);
+      }
+    }
+
+    &[data-period="evening"] {
+      .last {
+        background-color: var(--color);
+      }
+    }
+  }
+
   .half {
     position: relative;
     width: 100%;
@@ -120,30 +243,6 @@ export default {
       border-radius: 4px;
       background-color: rgba(#000, 0.9);
     }
-
-    &[data-title]:not(.isOpen) {
-      &:hover {
-        &::after {
-          display: block;
-        }
-      }
-    }
-
-    &.nwd {
-      background-color: rgba(#000, 0.2);
-    }
-
-    &.holiday {
-      background-color: rgba(green, 0.7);
-    }
-
-    &.sickness {
-      background-color: rgba(red, 0.7);
-    }
-
-    &.selected {
-      background-color: lightblue;
-    }
   }
 
   .info {
@@ -170,6 +269,6 @@ export default {
       border: 2px solid rgba(#000, 0.5);
       border-radius: 50%;
     }
-  }
 }
+  }
 </style>

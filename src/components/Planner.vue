@@ -2,7 +2,7 @@
   <div class="planner">
     <Calendar />
 
-    <Modal :type="modalType" />
+    <Modal :modalInfo="modalInfo" />
   </div>
 </template>
 
@@ -18,12 +18,12 @@ export default {
   },
   data() {
     return {
-      modalType: null,
+      modalInfo: {},
     };
   },
   mounted() {
     this.$eventBus.$on('showModal', (payload) => {
-      this.modalType = payload.type;
+      this.modalInfo = payload;
     });
   },
 };

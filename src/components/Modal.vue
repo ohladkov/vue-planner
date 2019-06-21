@@ -1,9 +1,9 @@
 <template>
   <div class="modal fade" tabindex="-1" role="dialog" id="bookModal">
     <div class="modal-dialog" role="document">
-      <BookForm v-if="type === 'booking'" />
+      <EventInfo v-if="modalInfo.type === 'event'" />
 
-      <EventInfo v-else />
+      <BookForm v-else />
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@ import EventInfo from './EventInfo';
 export default {
   name: 'Modal',
   props: {
-    type: {
+    modalInfo: {
       required: true,
     },
   },
@@ -44,12 +44,6 @@ export default {
 
   .modal-title {
     text-align: center;
-  }
-
-  .form-group {
-    label {
-      display: block;
-    }
   }
 
   textarea.form-control {
