@@ -1,9 +1,9 @@
 <template>
   <div class="modal fade" tabindex="-1" role="dialog" id="bookModal">
     <div class="modal-dialog" role="document">
-      <EventInfo v-if="modalInfo.type === 'event'" />
+      <EventInfo v-show="modalInfo.type === 'event'" :events="modalInfo.events" />
 
-      <BookForm v-else />
+      <BookForm v-show="modalInfo.type !== 'event'" />
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@ export default {
   props: {
     modalInfo: {
       required: true,
+      type: Object
     },
   },
   components: {
@@ -44,6 +45,27 @@ export default {
 
   .modal-title {
     text-align: center;
+  }
+
+  .vdp-datepicker {
+    padding: 0;
+
+    input {
+      width: 100%;
+      padding: 6px 12px;
+      border: 0;
+      border-radius: 4px;
+
+      &:focus {
+        border-color: #66afe9;
+        outline: 0;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      }
+    }
+  }
+
+  select.form-control {
+    text-transform: capitalize;
   }
 
   textarea.form-control {

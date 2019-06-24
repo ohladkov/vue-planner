@@ -15,19 +15,23 @@
         :specialEvents="specialDays[index + 1]"
       />
     </div>
+
+    <Modal :modalInfo="modalInfo" />
   </div>
 </template>
 
 <script>
 import Month from './Month';
+import Modal from './Modal';
 import { Api } from '../api/api';
 import { months } from '../helpers/constants';
-import { sortEventsByMonth } from '../helpers/utils';
+import { sortEventsByMonth } from '../helpers/dateUtils';
 
 export default {
   name: 'Calendar',
   components: {
     Month,
+    Modal
   },
   data() {
     return {
@@ -35,11 +39,17 @@ export default {
       year: new Date().getFullYear(),
       events: {},
       specialEvents: {},
+      schedule: {},
+      modalInfo: {},
       months,
     };
   },
   mounted() {
     this.setData();
+
+    this.$eventBus.$on('showModal', (payload) => {
+      this.modalInfo = {...payload, ...this.schedule};
+    });
   },
   methods: {
     async setData() {
@@ -52,6 +62,7 @@ export default {
       this.year = data.year;
       this.events = data.events;
       this.specialEvents = data.specialDays;
+      this.schedule = data.schedule;
 
       return data;
     },

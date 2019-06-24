@@ -1,32 +1,22 @@
 <template>
-  <div 
-    v-if="day.isEmpty"
-    class="day" 
-    data-empty
-  ></div>
+  <div v-if="day.isEmpty" class="day" data-empty></div>
 
-  <div 
+  <div
     v-else
     :data-holiday="holidayTypes"
     :data-period="holidayPeriod"
     @click="onClick"
-    class="day" 
+    class="day"
     data-toggle="modal"
     data-target="#bookModal"
   >
-    <div 
-      :data-type="dayPeriodType.morning"
-      class="half first" 
-    ></div>
+    <div :data-type="dayPeriodType.morning" class="half first"></div>
 
     <div class="day-index">
       {{ day.id }}
     </div>
 
-    <div 
-      :data-type="dayPeriodType.evening"
-      class="half last" 
-    ></div>
+    <div :data-type="dayPeriodType.evening" class="half last"></div>
   </div>
 </template>
 
@@ -39,31 +29,28 @@ export default {
       required: true,
     },
     events: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   data() {
     return {};
   },
-  mounted() {
-  },
-  updated() {
-  },
+  mounted() {},
   methods: {
     onClick(e) {
       if (!e.target.dataset.type) {
-        this.$eventBus.$emit('showModal', {});
-        return;
+        const period = e.target.matches('.first') ? 'morning' : 'evening';
+        return this.$eventBus.$emit('showModal', { date: this.$props.day.date, period });
       }
 
-      const { type } = e.target.dataset;
       const { holiday, period } = e.currentTarget.dataset;
+      const { type } = e.target.dataset;
 
       const payload = {
         type,
         holiday,
         period,
-        events: this.allEvents
+        events: this.allEvents,
       };
 
       this.$eventBus.$emit('showModal', payload);
@@ -96,8 +83,8 @@ export default {
     dayPeriodType() {
       const type = {
         morning: null,
-        evening: null
-      }
+        evening: null,
+      };
 
       if (this.holidayTypes && this.holidayTypes.length) {
         if (this.holidayPeriod && this.holidayPeriod.length) {
@@ -115,7 +102,7 @@ export default {
       }
 
       return type;
-    }
+    },
   },
 };
 </script>
@@ -152,60 +139,60 @@ export default {
     outline: 1px solid rgba(#000, 0.025);
   }
 
-  &[data-holiday="holiday"] {
+  &[data-holiday='holiday'] {
     --color: green;
 
-    &[data-period="workday"] {
+    &[data-period='workday'] {
       background-color: var(--color);
     }
 
-    &[data-period="morning"] {
+    &[data-period='morning'] {
       .first {
         background-color: var(--color);
       }
     }
 
-    &[data-period="evening"] {
+    &[data-period='evening'] {
       .last {
         background-color: var(--color);
       }
     }
   }
 
-  &[data-holiday="day_off"] {
+  &[data-holiday='day_off'] {
     --color: orange;
 
-    &[data-period="workday"] {
+    &[data-period='workday'] {
       background-color: var(--color);
     }
 
-    &[data-period="morning"] {
+    &[data-period='morning'] {
       .first {
         background-color: var(--color);
       }
     }
 
-    &[data-period="evening"] {
+    &[data-period='evening'] {
       .last {
         background-color: var(--color);
       }
     }
   }
 
-  &[data-holiday="sickness"] {
+  &[data-holiday='sickness'] {
     --color: red;
 
-    &[data-period="workday"] {
+    &[data-period='workday'] {
       background-color: var(--color);
     }
 
-    &[data-period="morning"] {
+    &[data-period='morning'] {
       .first {
         background-color: var(--color);
       }
     }
 
-    &[data-period="evening"] {
+    &[data-period='evening'] {
       .last {
         background-color: var(--color);
       }
@@ -269,6 +256,6 @@ export default {
       border: 2px solid rgba(#000, 0.5);
       border-radius: 50%;
     }
-}
   }
+}
 </style>

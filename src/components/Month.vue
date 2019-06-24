@@ -44,14 +44,12 @@ export default {
       days: {},
     };
   },
-  // updated() {
-  // },
   computed: {
     daysList() {
       const { year, month, events } = this.$props;
       const monthId = month.id;
-      const days = getDaysInMonth(year, monthId);
-      const offsetDays = getDaysOffset(year, monthId);
+      const days = getDaysInMonth(`${year}-${monthId}`);
+      const offsetDays = getDaysOffset(`${year}-${monthId}`);
 
       const daysList = [];
 

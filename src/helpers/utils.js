@@ -5,24 +5,4 @@ export const setScrollBarWidth = () => {
   root.style.setProperty('--scrollBarWidth', getScrollBarWidth());
 };
 
-export const sortEventsByMonth = (events) => {
-  const eventsEntries = Object.entries(events);
-  const monthEvents = {};
-
-  eventsEntries.forEach((entry) => {
-    const [entryDate] = entry;
-    const month = new Date(entryDate).getMonth() + 1;
-
-    if (!monthEvents[month]) {
-      monthEvents[month] = [];
-    }
-
-    monthEvents[month].push(entry);
-  });
-
-  return monthEvents;
-};
-
-export const convertToDoubleDigit = (num) => {
-  return `0${num}`.slice(-2);
-};
+export const convertToDoubleDigit = (num) => `0${num}`.slice(-2);
