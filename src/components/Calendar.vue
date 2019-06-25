@@ -16,7 +16,7 @@
       />
     </div>
 
-    <Modal :modalInfo="modalInfo" />
+    <Modal :modalInfo="modalInfo" :schedule="schedule" />
   </div>
 </template>
 
@@ -31,7 +31,7 @@ export default {
   name: 'Calendar',
   components: {
     Month,
-    Modal
+    Modal,
   },
   data() {
     return {
@@ -48,7 +48,7 @@ export default {
     this.setData();
 
     this.$eventBus.$on('showModal', (payload) => {
-      this.modalInfo = {...payload, ...this.schedule};
+      this.modalInfo = { ...payload };
     });
   },
   methods: {

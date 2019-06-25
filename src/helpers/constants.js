@@ -63,4 +63,25 @@ export const months = [
 
 export const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export const workHoursList = ['00:00AM', '00:05AM', '00:10AM', '00:15AM', '00:20AM', '00:25AM', '00:30AM'];
+export const holidayParts = {
+  start: [
+    {
+      text: 'morning',
+      value: 'am',
+    },
+    {
+      text: 'afternoon',
+      value: 'pm',
+    },
+  ],
+  end: [
+    {
+      text: 'lunchtime',
+      value: 'am',
+    },
+    {
+      text: 'evening',
+      value: 'pm',
+    },
+  ],
+};

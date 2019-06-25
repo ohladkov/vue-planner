@@ -31,8 +31,10 @@ export const sortEventsByMonth = (events) => {
   return monthEvents;
 };
 
+export const getDayName = (date) => moment(date).format('dddd');
+
 export const createTimesList = (startTime, endTime, interval = 30) => {
-  const times = [startTime];
+  const times = [{ text: startTime, value: startTime }];
 
   while (moment(startTime, 'HH:mm').isBefore(moment(endTime, 'HH:mm'))) {
     const updatedTime = moment(startTime, 'HH:mm')
@@ -40,7 +42,7 @@ export const createTimesList = (startTime, endTime, interval = 30) => {
       .format('HH:mm');
 
     startTime = updatedTime;
-    times.push(startTime);
+    times.push({ text: startTime, value: startTime });
   }
 
   return times;

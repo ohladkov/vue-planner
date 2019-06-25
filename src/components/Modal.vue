@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
       <EventInfo v-show="modalInfo.type === 'event'" :events="modalInfo.events" />
 
-      <BookForm v-show="modalInfo.type !== 'event'" />
+      <BookForm v-show="modalInfo.type !== 'event'" :schedule="schedule" />
     </div>
   </div>
 </template>
@@ -17,7 +17,11 @@ export default {
   props: {
     modalInfo: {
       required: true,
-      type: Object
+      type: Object,
+    },
+    schedule: {
+      required: true,
+      type: Object,
     },
   },
   components: {
@@ -55,6 +59,11 @@ export default {
       padding: 6px 12px;
       border: 0;
       border-radius: 4px;
+
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
       &:focus {
         border-color: #66afe9;
