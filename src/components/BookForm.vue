@@ -13,7 +13,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select v-model="holiday.selected" class="form-control" name="type" id="type">
+                <select v-model="holiday.selected" @change="onHolidayChange" class="form-control" name="type" id="type">
                   <option v-for="option in holiday.options" :key="option.id" :value="option">
                     {{ option.split('_').join(' ') }}
                   </option>
@@ -48,7 +48,7 @@
                       name="from-day-part"
                       id="from-day-part"
                     >
-                      <option v-for="option in fromHours" :key="option.value" :value="option.value">
+                      <option v-for="option in startTimeList" :key="option.value" :value="option.value">
                         {{ option.text }}
                       </option>
                     </select>
@@ -67,7 +67,7 @@
                       format="D, dd MMM yy"
                       :mondayFirst="true"
                       :disabledDates="disabledDates"
-                      :disabled="disabled"
+                      :disabled="isDatepickerDisabled"
                       class="form-control"
                       name="to"
                       id="to"
@@ -79,7 +79,7 @@
                   <div class="form-group">
                     <label for="to-day-part">&nbsp;</label>
                     <select v-model="to.selected" class="form-control" name="to-day-part" id="to-day-part">
-                      <option v-for="option in toHours" :key="option.value" :value="option.value">
+                      <option v-for="option in endTimeList" :key="option.value" :value="option.value">
                         {{ option.text }}
                       </option>
                     </select>
@@ -114,7 +114,8 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import { isBefore, createTimesList, getDayName } from '../helpers/dateUtils';
-import { holidayParts } from '../helpers/constants';
+import { holidayTypes, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
+import { isEmptyObject } from '../helpers/utils';
 
 export default {
   name: 'BookForm',
@@ -131,8 +132,8 @@ export default {
     return {
       reason: '',
       holiday: {
-        selected: 'holiday',
-        options: ['holiday', 'day_off', 'sickness'],
+        selected: holidayTypes[0],
+        options: holidayTypes,
       },
       from: {
         date: new Date(),
@@ -145,7 +146,6 @@ export default {
       disabledDates: {
         to: new Date(),
       },
-      disabled: false,
     };
   },
   created() {
@@ -153,7 +153,8 @@ export default {
       this.from.date = payload.date;
       this.to.date = payload.date;
 
-      // this.from.selected = payload.period;
+      this.from.selected = payload.period;
+      this.to.selected = payload.period;
 
       this.disabledDates.to = new Date(payload.date);
     });
@@ -166,50 +167,66 @@ export default {
 
       this.disabledDates.to = new Date(date);
     },
-    onChange() {
-      if (this.from.selected !== 'am' && this.from.selected !== 'pm') {
-        this.disabled = true;
-      } else {
-        this.disabled = false;
-
-        this.toHours = holidayParts.to;
+    onChange(e) {
+      if (this.from.selected === MORNING || this.from.selected === EVENING) {
+        this.to.selected = e.target.value;
+      }
+    },
+    onHolidayChange() {
+      if (this.holiday.selected !== DAY_OFF) {
+        this.from.selected = this.startTimeList[0].value;
+        this.to.selected = this.endTimeList[0].value;
       }
     },
   },
   computed: {
-    fromHours() {
-      if (this.holiday.selected !== 'day_off') {
-        this.from.selected = holidayParts.start[0].value;
+    scheduleHoursList() {
+      const { schedule } = this.$props;
+      const currentDay = getDayName(this.from.date).toLowerCase();
 
+      if (isEmptyObject(schedule[currentDay])) {
+        return [];
+      }
+
+      const startTime = schedule[currentDay] && schedule[currentDay].m.f;
+      const endTime = schedule[currentDay] && schedule[currentDay].a.t;
+
+      return createTimesList(startTime, endTime);
+    },
+    startTimeList() {
+      if (!this.scheduleHoursList.length) {
+        this.$set(this.from, 'selected', holidayParts.start[0].value);
         return holidayParts.start;
       }
 
-      const { schedule } = this.$props;
-      const currentDay = getDayName(this.from.date).toLowerCase();
-      const startTime = schedule[currentDay].m.f;
-      const endTime = schedule[currentDay].a.t;
+      if (this.holiday.selected !== DAY_OFF) {
+        return holidayParts.start;
+      }
 
-      return [...holidayParts.start, ...createTimesList(startTime, endTime)];
+      return [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
     },
-    toHours: {
-      set(items) {
-        return items;
-      },
+    endTimeList() {
+      if (!this.scheduleHoursList.length) {
+        this.$set(this.to, 'selected', holidayParts.end[0].value);
 
-      get() {
-        if (this.holiday.selected !== 'day_off') {
-          this.from.selected = holidayParts.end[0].value;
+        return holidayParts.end;
+      }
 
-          return holidayParts.end;
-        }
+      if (this.from.selected === MORNING) {
+        return holidayParts.end;
+      } else if (this.from.selected === EVENING) {
+        return holidayParts.end.slice(1);
+      }
 
-        const hoursList = this.fromHours.map((hour) => hour.value);
-        const items = this.fromHours.filter((hour, index) => index > hoursList.indexOf(this.from.selected));
+      const hoursList = this.scheduleHoursList.map((item) => item.value);
+      const hours = this.scheduleHoursList.filter((hour, index) => index > hoursList.indexOf(this.from.selected));
 
-        this.to.selected = items[0].value;
+      this.$set(this.to, 'selected', hours[0].value);
 
-        return items;
-      },
+      return hours;
+    },
+    isDatepickerDisabled() {
+      return this.from.selected !== MORNING && this.from.selected !== EVENING;
     },
   },
 };

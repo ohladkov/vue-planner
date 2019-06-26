@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { MORNING, EVENING } from '../helpers/constants';
+
 export default {
   name: 'Day',
   props: {
@@ -39,7 +41,7 @@ export default {
   methods: {
     onClick(e) {
       if (!e.target.dataset.type) {
-        const period = e.target.matches('.first') ? 'morning' : 'evening';
+        const period = e.target.matches('.first') ? MORNING : EVENING;
         return this.$eventBus.$emit('showModal', { date: this.$props.day.date, period });
       }
 
