@@ -3,6 +3,7 @@
 
   <div
     v-else
+    :class="{ 'has-multiple-events': holidayTypes.length > 1 }"
     :data-holiday="holidayTypes"
     :data-period="holidayPeriod"
     @click="onClick"
@@ -30,14 +31,10 @@ export default {
       type: Object,
       required: true,
     },
-    events: {
-      type: Array,
-    },
   },
   data() {
     return {};
   },
-  mounted() {},
   methods: {
     onClick(e) {
       if (!e.target.dataset.type) {
@@ -63,6 +60,20 @@ export default {
       const { events } = this.$props.day;
 
       if (events && events.length) {
+        events.forEach((event) => {
+          if (!event.time_period) {
+            event.time_period = 'workday';
+          }
+
+          if (!event.date_from) {
+            event.date_from = this.$props.day.date;
+          }
+
+          if (!event.date_to) {
+            event.date_to = this.$props.day.date;
+          }
+        });
+
         return events;
       }
 
@@ -73,14 +84,14 @@ export default {
         return this.allEvents.map((event) => event.type);
       }
 
-      return null;
+      return [];
     },
     holidayPeriod() {
       if (this.allEvents.length) {
         return this.allEvents.map((event) => event.time_period);
       }
 
-      return null;
+      return [];
     },
     dayPeriodType() {
       const type = {
@@ -110,7 +121,40 @@ export default {
 </script>
 
 <style lang="scss">
+$holidaysList: (
+  'holiday': 'green',
+  'days_off': 'orange',
+  'sickness': 'red',
+  'workday': 'blue',
+  'p_holiday': 'yellow',
+  'locked': 'deeppink',
+);
+
+@mixin holidays($holidayTypes) {
+  @each $key, $value in $holidayTypes {
+    &[data-holiday='#{$key}'] {
+      &[data-period='workday'] {
+        background-color: unquote($string: $value);
+      }
+
+      &[data-period='morning'] {
+        .first {
+          background-color: unquote($string: $value);
+        }
+      }
+
+      &[data-period='evening'] {
+        .last {
+          background-color: unquote($string: $value);
+        }
+      }
+    }
+  }
+}
+
 .day {
+  @include holidays($holidaysList);
+
   position: relative;
   display: flex;
   width: calc(100% / var(--daysInWeek));
@@ -136,69 +180,29 @@ export default {
     opacity: 0.5;
   }
 
+  &.has-multiple-events {
+    background-image: linear-gradient(
+      135deg,
+      hotpink 12.5%,
+      red 12.5%,
+      red 25%,
+      orange 25%,
+      orange 37.5%,
+      yellow 37.5%,
+      yellow 50%,
+      green 50%,
+      green 62.5%,
+      turquoise 62.5%,
+      turquoise 75%,
+      indigo 75%,
+      indigo 87.5%,
+      violet 87.5%
+    );
+  }
+
   &:hover {
     z-index: 2;
     outline: 1px solid rgba(#000, 0.025);
-  }
-
-  &[data-holiday='holiday'] {
-    --color: green;
-
-    &[data-period='workday'] {
-      background-color: var(--color);
-    }
-
-    &[data-period='morning'] {
-      .first {
-        background-color: var(--color);
-      }
-    }
-
-    &[data-period='evening'] {
-      .last {
-        background-color: var(--color);
-      }
-    }
-  }
-
-  &[data-holiday='day_off'] {
-    --color: orange;
-
-    &[data-period='workday'] {
-      background-color: var(--color);
-    }
-
-    &[data-period='morning'] {
-      .first {
-        background-color: var(--color);
-      }
-    }
-
-    &[data-period='evening'] {
-      .last {
-        background-color: var(--color);
-      }
-    }
-  }
-
-  &[data-holiday='sickness'] {
-    --color: red;
-
-    &[data-period='workday'] {
-      background-color: var(--color);
-    }
-
-    &[data-period='morning'] {
-      .first {
-        background-color: var(--color);
-      }
-    }
-
-    &[data-period='evening'] {
-      .last {
-        background-color: var(--color);
-      }
-    }
   }
 
   .half {

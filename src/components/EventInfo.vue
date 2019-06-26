@@ -38,8 +38,8 @@ export default {
 
       events.forEach((event) => {
         eventsInfo[event.type] = {
-          from: `${event.date_from} ${event.time_from}`,
-          to: `${event.date_to} ${event.time_to}`,
+          from: `${event.date_from} ${event.time_from || ''}`,// TODO fix if no time is set
+          to: `${event.date_to} ${event.time_to || ''}`,// TODO fix if no time is set
         };
       });
 

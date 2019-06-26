@@ -9,7 +9,7 @@ export const getDaysInMonth = (date) => moment(dateToISOString(date)).daysInMont
 export const getDaysOffset = (date) =>
   moment(dateToISOString(date)).day() === 0 ? 5 : moment(dateToISOString(date)).day() - 2;
 
-export const formatDateToString = (date) => moment(date).format('llll');
+export const formatDateToString = (date) => moment(date).format('llll'); // TODO fix moment Deprecation warning
 
 export const isBefore = (date1, date2) => moment(dateToISOString(date1)).isBefore(dateToISOString(date2));
 

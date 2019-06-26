@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     daysList() {
-      const { year, month, events } = this.$props;
+      const { year, month, events, specialEvents } = this.$props;
       const monthId = month.id;
       const days = getDaysInMonth(`${year}-${monthId}`);
       const offsetDays = getDaysOffset(`${year}-${monthId}`);
@@ -65,13 +65,21 @@ export default {
           continue;
         }
 
+        let eventsList = [];
         const dateFormat = `${year}-${convertToDoubleDigit(monthId)}-${convertToDoubleDigit(i)}`;
         day.date = dateFormat;
 
-        if (events && events.length) {
-          events.forEach((entry) => {
-            const [date, event] = entry;
+        if (events && events.length && (specialEvents && specialEvents.length)) {
+          eventsList = [...events, ...specialEvents];
+        } else if (events && events.length) {
+          eventsList = [...events];
+        } else if (specialEvents && specialEvents.length) {
+          eventsList = [...specialEvents];
+        }
 
+        if (eventsList.length) {
+          eventsList.forEach((entry) => {
+            const [date, event] = entry;
             if (dateFormat === date) {
               day.events = event;
             }
