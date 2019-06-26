@@ -165,6 +165,8 @@ export default {
         this.to.date = new Date(date);
       }
 
+      this.to.selected = this.startTimeList[0].value;
+
       this.disabledDates.to = new Date(date);
     },
     onChange(e) {
@@ -200,10 +202,14 @@ export default {
       }
 
       if (this.holiday.selected !== DAY_OFF) {
+        this.$set(this.from, 'selected', holidayParts.start[0].value);
         return holidayParts.start;
       }
 
-      return [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
+      const timeList = [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
+      this.$set(this.from, 'selected', timeList[0].value);
+
+      return timeList;
     },
     endTimeList() {
       if (!this.scheduleHoursList.length) {
