@@ -62,7 +62,7 @@ export default {
       if (events && events.length) {
         events.forEach((event) => {
           if (schedule) {
-            if (event.time_from >= schedule.m.f && event.time_from < schedule.a.f) {
+            if (event.time_from >= schedule.m.f && event.time_to < schedule.a.f) {
               event.time_period = MORNING;
             } else if (event.time_from >= schedule.a.f) {
               event.time_period = EVENING;
@@ -89,14 +89,16 @@ export default {
     },
     holidayTypes() {
       if (this.allEvents.length) {
-        return this.allEvents.map((event) => event.type);
+        return Array.from(new Set(this.allEvents.map((event) => event.type)));
       }
 
       return [];
     },
     holidayPeriod() {
       if (this.allEvents.length) {
-        return this.allEvents.map((event) => event.time_period);
+        return Array.from(new Set(this.allEvents.map((event) => event.time_period))).length > 1
+          ? [FULL_DAY]
+          : Array.from(new Set(this.allEvents.map((event) => event.time_period)));
       }
 
       return [];
