@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { MORNING, EVENING } from '../helpers/constants';
+import { MORNING, EVENING, FULL_DAY } from '../helpers/constants';
 
 export default {
   name: 'Day',
@@ -57,12 +57,20 @@ export default {
   },
   computed: {
     allEvents() {
-      const { events } = this.$props.day;
+      const { events, schedule } = this.$props.day;
 
       if (events && events.length) {
         events.forEach((event) => {
-          if (!event.time_period) {
-            event.time_period = 'workday';
+          if (schedule) {
+            if (event.time_from >= schedule.m.f && event.time_from < schedule.a.f) {
+              event.time_period = MORNING;
+            } else if (event.time_from >= schedule.a.f) {
+              event.time_period = EVENING;
+            } else {
+              event.time_period = FULL_DAY;
+            }
+          } else {
+            event.time_period = FULL_DAY;
           }
 
           if (!event.date_from) {
@@ -95,19 +103,19 @@ export default {
     },
     dayPeriodType() {
       const type = {
-        morning: null,
-        evening: null,
+        [MORNING]: null,
+        [EVENING]: null,
       };
 
       if (this.holidayTypes && this.holidayTypes.length) {
         if (this.holidayPeriod && this.holidayPeriod.length) {
           this.holidayPeriod.forEach((period) => {
-            if (period === 'workday') {
+            if (period === FULL_DAY) {
               type.morning = 'event';
               type.evening = 'event';
-            } else if (period === 'morning') {
+            } else if (period === MORNING) {
               type.morning = 'event';
-            } else if (period === 'evening') {
+            } else if (period === EVENING) {
               type.evening = 'event';
             }
           });
@@ -122,28 +130,29 @@ export default {
 
 <style lang="scss">
 $holidaysList: (
-  'holiday': 'green',
-  'days_off': 'orange',
-  'sickness': 'red',
-  'workday': 'blue',
-  'p_holiday': 'yellow',
-  'locked': 'deeppink',
+  'holiday': 'seagreen',
+  'day_off': 'darkorange',
+  'sickness': 'crimson',
+  'workday': 'violet',
+  'public_holiday': 'gold',
+  'locked': 'peru',
 );
 
 @mixin holidays($holidayTypes) {
   @each $key, $value in $holidayTypes {
     &[data-holiday='#{$key}'] {
       &[data-period='workday'] {
+        color: #fff;
         background-color: unquote($string: $value);
       }
 
-      &[data-period='morning'] {
+      &[data-period='am'] {
         .first {
           background-color: unquote($string: $value);
         }
       }
 
-      &[data-period='evening'] {
+      &[data-period='pm'] {
         .last {
           background-color: unquote($string: $value);
         }
@@ -181,23 +190,25 @@ $holidaysList: (
   }
 
   &.has-multiple-events {
-    background-image: linear-gradient(
-      135deg,
-      hotpink 12.5%,
-      red 12.5%,
-      red 25%,
-      orange 25%,
-      orange 37.5%,
-      yellow 37.5%,
-      yellow 50%,
-      green 50%,
-      green 62.5%,
-      turquoise 62.5%,
-      turquoise 75%,
-      indigo 75%,
-      indigo 87.5%,
-      violet 87.5%
-    );
+    color: #fff;
+    background-image: linear-gradient(135deg, crimson, darkorange, violet);
+    // background-image: linear-gradient(
+    //   135deg,
+    //   hotpink 12.5%,
+    //   red 12.5%,
+    //   red 25%,
+    //   orange 25%,
+    //   orange 37.5%,
+    //   yellow 37.5%,
+    //   yellow 50%,
+    //   green 50%,
+    //   green 62.5%,
+    //   turquoise 62.5%,
+    //   turquoise 75%,
+    //   indigo 75%,
+    //   indigo 87.5%,
+    //   violet 87.5%
+    // );
   }
 
   &:hover {

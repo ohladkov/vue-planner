@@ -13,13 +13,17 @@
 <script>
 import Week from './Week';
 import Day from './Day';
-import { getDaysOffset, getDaysInMonth } from '../helpers/dateUtils';
-import { convertToDoubleDigit } from '../helpers/utils';
+import { getDaysOffset, getDaysInMonth, getDayName } from '../helpers/dateUtils';
+import { convertToDoubleDigit, isEmptyObject } from '../helpers/utils';
 
 export default {
   name: 'Month',
   props: {
     month: {
+      type: Object,
+      required: true,
+    },
+    schedule: {
       type: Object,
       required: true,
     },
@@ -46,10 +50,10 @@ export default {
   },
   computed: {
     daysList() {
-      const { year, month, events, specialEvents } = this.$props;
-      const monthId = month.id;
+      const { year, month, events, specialEvents, schedule } = this.$props;
       const days = getDaysInMonth(`${year}-${monthId}`);
       const offsetDays = getDaysOffset(`${year}-${monthId}`);
+      const monthId = month.id;
 
       const daysList = [];
 
@@ -66,7 +70,15 @@ export default {
         }
 
         let eventsList = [];
+
         const dateFormat = `${year}-${convertToDoubleDigit(monthId)}-${convertToDoubleDigit(i)}`;
+        const dayName = getDayName(dateFormat);
+        const daySchedule = schedule[dayName];
+
+        if (!isEmptyObject(daySchedule)) {
+          day.schedule = daySchedule;
+        }
+
         day.date = dateFormat;
 
         if (events && events.length && (specialEvents && specialEvents.length)) {

@@ -13,7 +13,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select v-model="holiday.selected" @change="onHolidayChange" class="form-control" name="type" id="type">
+                <select v-model="holiday['selected']" @change="onHolidayChange" class="form-control" name="type" id="type">
                   <option v-for="option in holiday.options" :key="option.id" :value="option">
                     {{ option.split('_').join(' ') }}
                   </option>
@@ -25,28 +25,28 @@
               <div class="row">
                 <div class="col-md-7">
                   <div class="form-group">
-                    <label for="from">Starting</label>
+                    <label for="date_from">Starting</label>
                     <datepicker
                       v-model="from.date"
                       :mondayFirst="true"
                       @selected="onSelect"
                       format="D, dd MMM yy"
                       class="form-control"
-                      name="from"
-                      id="from"
+                      name="date_from"
+                      id="date_from"
                       autocomplete="off"
                     />
                   </div>
                 </div>
                 <div class="col-md-5">
                   <div class="form-group">
-                    <label for="from-day-part">&nbsp;</label>
+                    <label for="time_from">&nbsp;</label>
                     <select
-                      v-model="from.selected"
+                      v-model="from['selected']"
                       @change="onChange"
                       class="form-control"
-                      name="from-day-part"
-                      id="from-day-part"
+                      name="time_from"
+                      id="time_from"
                     >
                       <option v-for="option in startTimeList" :key="option.value" :value="option.value">
                         {{ option.text }}
@@ -61,7 +61,7 @@
               <div class="row">
                 <div class="col-md-7">
                   <div class="form-group">
-                    <label for="to">Ending</label>
+                    <label for="date_to">Ending</label>
                     <datepicker
                       v-model="to.date"
                       format="D, dd MMM yy"
@@ -69,16 +69,16 @@
                       :disabledDates="disabledDates"
                       :disabled="isDatepickerDisabled"
                       class="form-control"
-                      name="to"
-                      id="to"
+                      name="date_to"
+                      id="date_to"
                       autocomplete="off"
                     />
                   </div>
                 </div>
                 <div class="col-md-5">
                   <div class="form-group">
-                    <label for="to-day-part">&nbsp;</label>
-                    <select v-model="to.selected" class="form-control" name="to-day-part" id="to-day-part">
+                    <label for="time_to">&nbsp;</label>
+                    <select v-model="to['selected']" class="form-control" name="time_to" id="time_to">
                       <option v-for="option in endTimeList" :key="option.value" :value="option.value">
                         {{ option.text }}
                       </option>
@@ -117,6 +117,8 @@ import { isBefore, createTimesList, getDayName } from '../helpers/dateUtils';
 import { holidayTypes, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
 import { isEmptyObject } from '../helpers/utils';
 
+const SELECTED_OPTION = 'selected';
+
 export default {
   name: 'BookForm',
   props: {
@@ -132,16 +134,16 @@ export default {
     return {
       reason: '',
       holiday: {
-        selected: holidayTypes[0],
+        [SELECTED_OPTION]: holidayTypes[0],
         options: holidayTypes,
       },
       from: {
         date: new Date(),
-        selected: holidayParts.start[0].value,
+        [SELECTED_OPTION]: holidayParts.start[0].value,
       },
       to: {
         date: new Date(),
-        selected: holidayParts.end[0].value,
+        [SELECTED_OPTION]: holidayParts.end[0].value,
       },
       disabledDates: {
         to: new Date(),
@@ -153,8 +155,8 @@ export default {
       this.from.date = payload.date;
       this.to.date = payload.date;
 
-      this.from.selected = payload.period;
-      this.to.selected = payload.period;
+      this.from[SELECTED_OPTION] = payload.period;
+      this.to[SELECTED_OPTION] = payload.period;
 
       this.disabledDates.to = new Date(payload.date);
     });
@@ -165,26 +167,26 @@ export default {
         this.to.date = new Date(date);
       }
 
-      this.to.selected = this.startTimeList[0].value;
+      this.to[SELECTED_OPTION] = this.startTimeList[0].value;
 
       this.disabledDates.to = new Date(date);
     },
     onChange(e) {
-      if (this.from.selected === MORNING || this.from.selected === EVENING) {
-        this.to.selected = e.target.value;
+      if (this.from[SELECTED_OPTION] === MORNING || this.from[SELECTED_OPTION] === EVENING) {
+        this.to[SELECTED_OPTION] = e.target.value;
       }
     },
     onHolidayChange() {
-      if (this.holiday.selected !== DAY_OFF) {
-        this.from.selected = this.startTimeList[0].value;
-        this.to.selected = this.endTimeList[0].value;
+      if (this.holiday[SELECTED_OPTION] !== DAY_OFF) {
+        this.from[SELECTED_OPTION] = this.startTimeList[0].value;
+        this.to[SELECTED_OPTION] = this.endTimeList[0].value;
       }
     },
   },
   computed: {
     scheduleHoursList() {
       const { schedule } = this.$props;
-      const currentDay = getDayName(this.from.date).toLowerCase();
+      const currentDay = getDayName(this.from.date);
 
       if (isEmptyObject(schedule[currentDay])) {
         return [];
@@ -197,42 +199,44 @@ export default {
     },
     startTimeList() {
       if (!this.scheduleHoursList.length) {
-        this.$set(this.from, 'selected', holidayParts.start[0].value);
+        this.$set(this.from, SELECTED_OPTION, holidayParts.start[0].value);
         return holidayParts.start;
       }
 
-      if (this.holiday.selected !== DAY_OFF) {
-        this.$set(this.from, 'selected', holidayParts.start[0].value);
+      if (this.holiday[SELECTED_OPTION] !== DAY_OFF) {
+        this.$set(this.from, SELECTED_OPTION, holidayParts.start[0].value);
         return holidayParts.start;
       }
 
       const timeList = [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
-      this.$set(this.from, 'selected', timeList[0].value);
+      this.$set(this.from, SELECTED_OPTION, timeList[0].value);
 
       return timeList;
     },
     endTimeList() {
       if (!this.scheduleHoursList.length) {
-        this.$set(this.to, 'selected', holidayParts.end[0].value);
+        this.$set(this.to, SELECTED_OPTION, holidayParts.end[0].value);
 
         return holidayParts.end;
       }
 
-      if (this.from.selected === MORNING) {
+      if (this.from[SELECTED_OPTION] === MORNING) {
         return holidayParts.end;
-      } else if (this.from.selected === EVENING) {
+      } else if (this.from[SELECTED_OPTION] === EVENING) {
         return holidayParts.end.slice(1);
       }
 
       const hoursList = this.scheduleHoursList.map((item) => item.value);
-      const hours = this.scheduleHoursList.filter((hour, index) => index > hoursList.indexOf(this.from.selected));
+      const hours = this.scheduleHoursList.filter(
+        (hour, index) => index > hoursList.indexOf(this.from[SELECTED_OPTION]),
+      );
 
-      this.$set(this.to, 'selected', hours[0].value);
+      this.$set(this.to, SELECTED_OPTION, hours[0].value);
 
       return hours;
     },
     isDatepickerDisabled() {
-      return this.from.selected !== MORNING && this.from.selected !== EVENING;
+      return this.from[SELECTED_OPTION] !== MORNING && this.from[SELECTED_OPTION] !== EVENING;
     },
   },
 };

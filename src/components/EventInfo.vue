@@ -38,8 +38,10 @@ export default {
 
       events.forEach((event) => {
         eventsInfo[event.type] = {
-          from: `${event.date_from} ${event.time_from || ''}`,// TODO fix if no time is set
-          to: `${event.date_to} ${event.time_to || ''}`,// TODO fix if no time is set
+          fromDate: `${event.date_from}`,
+          fromTime: `${event.time_from || ''}`,
+          toDate: `${event.date_to}`,
+          toTime: `${event.time_to || ''}`,
         };
       });
 
@@ -58,9 +60,9 @@ export default {
             </div>
             <div class="col-md-9">
               <div class="event-content">
-                <strong>${formatDateToString(event[1].from)}</strong>
+                <strong>${formatDateToString(event[1].fromDate, event[1].fromTime)}</strong>
                 to
-                <strong>${formatDateToString(event[1].to)}</strong>
+                <strong>${formatDateToString(event[1].toDate, event[1].toTime)}</strong>
               </div>
             </div>
           </div>`,

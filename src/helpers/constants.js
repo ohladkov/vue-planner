@@ -91,3 +91,4 @@ export const holidayTypes = ['holiday', 'day_off', 'sickness'];
 export const MORNING = 'am';
 export const EVENING = 'pm';
 export const DAY_OFF = 'day_off';
+export const FULL_DAY = 'workday';

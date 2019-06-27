@@ -9,11 +9,21 @@ export const getDaysInMonth = (date) => moment(dateToISOString(date)).daysInMont
 export const getDaysOffset = (date) =>
   moment(dateToISOString(date)).day() === 0 ? 5 : moment(dateToISOString(date)).day() - 2;
 
-export const formatDateToString = (date) => moment(date).format('llll'); // TODO fix moment Deprecation warning
+export const formatDateToString = (date, time) => {
+  if (!time) {
+    return moment(date).format('ddd, D MMM, YYYY');
+  }
+
+  const fullDate = `${date} ${time}`;
+
+  return moment(new Date(fullDate)).format('ddd, D MMM, YYYY - HH:mm');
+};
 
 export const isBefore = (date1, date2) => moment(dateToISOString(date1)).isBefore(dateToISOString(date2));
 
 export const sortEventsByMonth = (events) => {
+  if (!events) return {};
+
   const eventsEntries = Object.entries(events);
   const monthEvents = {};
 
@@ -31,7 +41,10 @@ export const sortEventsByMonth = (events) => {
   return monthEvents;
 };
 
-export const getDayName = (date) => moment(date).format('dddd');
+export const getDayName = (date) =>
+  moment(date)
+    .format('dddd')
+    .toLowerCase();
 
 export const createTimesList = (startTime, endTime, interval = 30) => {
   const times = [{ text: startTime, value: startTime }];

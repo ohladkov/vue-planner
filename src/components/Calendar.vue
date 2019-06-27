@@ -13,6 +13,7 @@
         :year="year"
         :events="eventsDays[index + 1]"
         :specialEvents="specialDays[index + 1]"
+        :schedule="schedule"
       />
     </div>
 
@@ -26,6 +27,7 @@ import Modal from './Modal';
 import { Api } from '../api/api';
 import { months } from '../helpers/constants';
 import { sortEventsByMonth } from '../helpers/dateUtils';
+import { isEmptyObject } from '../helpers/utils';
 
 export default {
   name: 'Calendar',
@@ -69,10 +71,18 @@ export default {
   },
   computed: {
     eventsDays() {
-      return sortEventsByMonth(this.events);
+      if (!isEmptyObject(this.events)) {
+        return sortEventsByMonth(this.events);
+      }
+
+      return {};
     },
     specialDays() {
-      return sortEventsByMonth(this.specialEvents);
+      if (!isEmptyObject(this.specialEvents)) {
+        return sortEventsByMonth(this.specialEvents);
+      }
+
+      return {};
     },
   },
 };
