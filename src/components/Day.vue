@@ -11,13 +11,13 @@
     data-toggle="modal"
     data-target="#bookModal"
   >
-    <div :data-type="dayPeriodType.morning" class="half first"></div>
+    <div :data-type="dayPeriodType.am" class="half first"></div>
 
     <div class="day-index">
       {{ day.id }}
     </div>
 
-    <div :data-type="dayPeriodType.evening" class="half last"></div>
+    <div :data-type="dayPeriodType.pm" class="half last"></div>
   </div>
 </template>
 
@@ -62,7 +62,7 @@ export default {
       if (events && events.length) {
         events.forEach((event) => {
           if (schedule) {
-            if (event.time_from >= schedule.m.f && event.time_to < schedule.a.f) {
+            if (event.time_from <= schedule.m.f && event.time_to < schedule.a.f) {
               event.time_period = MORNING;
             } else if (event.time_from >= schedule.a.f) {
               event.time_period = EVENING;
@@ -109,20 +109,16 @@ export default {
         [EVENING]: null,
       };
 
-      if (this.holidayTypes && this.holidayTypes.length) {
-        if (this.holidayPeriod && this.holidayPeriod.length) {
-          this.holidayPeriod.forEach((period) => {
-            if (period === FULL_DAY) {
-              type.morning = 'event';
-              type.evening = 'event';
-            } else if (period === MORNING) {
-              type.morning = 'event';
-            } else if (period === EVENING) {
-              type.evening = 'event';
-            }
-          });
+      this.holidayPeriod.forEach((period) => {
+        if (period === FULL_DAY) {
+          type[MORNING] = 'event';
+          type[EVENING] = 'event';
+        } else if (period === MORNING) {
+          type[MORNING] = 'event';
+        } else if (period === EVENING) {
+          type[EVENING] = 'event';
         }
-      }
+      });
 
       return type;
     },
