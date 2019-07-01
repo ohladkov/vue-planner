@@ -114,7 +114,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import { isBefore, createTimesList, getDayName } from '../helpers/dateUtils';
-import { holidayTypes, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
+import { holidayEvents, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
 import { isEmptyObject } from '../helpers/utils';
 
 const SELECTED_OPTION = 'selected';
@@ -134,8 +134,8 @@ export default {
     return {
       reason: '',
       holiday: {
-        [SELECTED_OPTION]: holidayTypes[0],
-        options: holidayTypes,
+        [SELECTED_OPTION]: holidayEvents[0],
+        options: holidayEvents,
       },
       from: {
         date: new Date(),
@@ -174,6 +174,10 @@ export default {
     onChange(e) {
       if (this.from[SELECTED_OPTION] === MORNING || this.from[SELECTED_OPTION] === EVENING) {
         this.to[SELECTED_OPTION] = e.target.value;
+      }
+
+      if (this.isDatepickerDisabled) {
+        this.to.date = this.from.date;
       }
     },
     onHolidayChange() {

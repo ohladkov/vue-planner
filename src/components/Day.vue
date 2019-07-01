@@ -3,8 +3,8 @@
 
   <div
     v-else
-    :class="{ 'has-multiple-events': holidayTypes.length > 1 }"
-    :data-holiday="holidayTypes"
+    :class="{ nwd: freeDay }"
+    :data-holiday="holidayTypes.length > 1 ? 'multiple' : holidayTypes"
     :data-period="holidayPeriod"
     @click="onClick"
     class="day"
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { MORNING, EVENING, FULL_DAY } from '../helpers/constants';
+import { MORNING, EVENING, FULL_DAY, EVENT_TYPE } from '../helpers/constants';
 
 export default {
   name: 'Day',
@@ -59,7 +59,7 @@ export default {
     allEvents() {
       const { events, schedule } = this.$props.day;
 
-      if (events && events.length) {
+      if (Array.isArray(events)) {
         events.forEach((event) => {
           if (schedule) {
             if (event.time_from <= schedule.m.f && event.time_to < schedule.a.f) {
@@ -111,22 +111,29 @@ export default {
 
       this.holidayPeriod.forEach((period) => {
         if (period === FULL_DAY) {
-          type[MORNING] = 'event';
-          type[EVENING] = 'event';
+          type[MORNING] = EVENT_TYPE;
+          type[EVENING] = EVENT_TYPE;
         } else if (period === MORNING) {
-          type[MORNING] = 'event';
+          type[MORNING] = EVENT_TYPE;
         } else if (period === EVENING) {
-          type[EVENING] = 'event';
+          type[EVENING] = EVENT_TYPE;
         }
       });
 
       return type;
     },
+    freeDay() {
+      const { schedule } = this.$props.day;
+
+      return !schedule;
+    }
   },
 };
 </script>
 
 <style lang="scss">
+$gradient: 'linear-gradient(135deg, crimson, darkorange, violet)';
+
 $holidaysList: (
   'holiday': 'seagreen',
   'day_off': 'darkorange',
@@ -181,32 +188,33 @@ $holidaysList: (
     pointer-events: none;
   }
 
+  &.nwd {
+    background-color: #eee;
+  }
+
   &[data-is-past],
   &[data-empty] {
     pointer-events: none;
     opacity: 0.5;
   }
 
-  &.has-multiple-events {
-    color: #fff;
-    background-image: linear-gradient(135deg, crimson, darkorange, violet);
-    // background-image: linear-gradient(
-    //   135deg,
-    //   hotpink 12.5%,
-    //   red 12.5%,
-    //   red 25%,
-    //   orange 25%,
-    //   orange 37.5%,
-    //   yellow 37.5%,
-    //   yellow 50%,
-    //   green 50%,
-    //   green 62.5%,
-    //   turquoise 62.5%,
-    //   turquoise 75%,
-    //   indigo 75%,
-    //   indigo 87.5%,
-    //   violet 87.5%
-    // );
+  &[data-holiday='multiple'] {
+    &[data-period='workday'] {
+      color: #fff;
+      background-image: unquote($gradient);
+    }
+
+    &[data-period='am'] {
+      .first {
+        background-image: unquote($gradient);
+      }
+    }
+
+    &[data-period='pm'] {
+      .last {
+        background-image: unquote($gradient);
+      }
+    }
   }
 
   &:hover {

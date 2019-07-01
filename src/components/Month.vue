@@ -51,9 +51,9 @@ export default {
   computed: {
     daysList() {
       const { year, month, events, specialEvents, schedule } = this.$props;
+      const monthId = convertToDoubleDigit(month.id);
       const days = getDaysInMonth(`${year}-${monthId}`);
       const offsetDays = getDaysOffset(`${year}-${monthId}`);
-      const monthId = month.id;
 
       const daysList = [];
 
@@ -81,21 +81,30 @@ export default {
 
         day.date = dateFormat;
 
-        if (events && events.length && (specialEvents && specialEvents.length)) {
+        if (Array.isArray(events) && Array.isArray(specialEvents)) {
           eventsList = [...events, ...specialEvents];
-        } else if (events && events.length) {
+        } else if (Array.isArray(events)) {
           eventsList = [...events];
-        } else if (specialEvents && specialEvents.length) {
+        } else if (Array.isArray(specialEvents)) {
           eventsList = [...specialEvents];
         }
 
         if (eventsList.length) {
           eventsList.forEach((entry) => {
             const [date, event] = entry;
+
             if (dateFormat === date) {
-              day.events = event;
+              if (!day.events) {
+                day.events = [];
+              }
+
+              day.events.push(event);
             }
           });
+
+          if (Array.isArray(day.events)) {
+            day.events = day.events.flat();
+          }
         }
 
         daysList.push(day);
