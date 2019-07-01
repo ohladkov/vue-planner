@@ -7,7 +7,7 @@
       <h3 class="modal-title">Holiday info</h3>
     </div>
     <div class="modal-body">
-      <form action="#" class="event-form">
+      <form action="#" @click.prevent="onClick" class="event-form">
         <div class="container" v-html="eventsInfo"></div>
       </form>
     </div>
@@ -24,6 +24,17 @@ export default {
     events: {
       required: true,
     },
+  },
+  methods: {
+    async onClick(e) {
+      const btn = e.target.matches('[data-event-id]');
+      const id = btn ? e.target.dataset.eventId : null;
+
+      if (!id) return;
+
+      this.$eventBus.$emit('calendarRequest', `?cancel=${id}`);
+      jQuery('#bookModal').modal('hide');
+    }
   },
   computed: {
     eventsInfo() {

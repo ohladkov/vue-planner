@@ -6,6 +6,7 @@
     :class="{ nwd: freeDay }"
     :data-holiday="holidayTypes.length > 1 ? 'multiple' : holidayTypes"
     :data-period="holidayPeriod"
+    :data-current="day.isToday"
     @click="onClick"
     class="day"
     data-toggle="modal"

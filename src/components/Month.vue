@@ -36,6 +36,10 @@ export default {
     year: {
       required: true,
     },
+    currentDate: {
+      required: true,
+      type: String,
+    },
   },
   components: {
     Week,
@@ -50,7 +54,7 @@ export default {
   },
   computed: {
     daysList() {
-      const { year, month, events, specialEvents, schedule } = this.$props;
+      const { year, month, events, specialEvents, schedule, currentDate } = this.$props;
       const monthId = convertToDoubleDigit(month.id);
       const days = getDaysInMonth(`${year}-${monthId}`);
       const offsetDays = getDaysOffset(`${year}-${monthId}`);
@@ -72,6 +76,11 @@ export default {
         let eventsList = [];
 
         const dateFormat = `${year}-${convertToDoubleDigit(monthId)}-${convertToDoubleDigit(i)}`;
+
+        if (dateFormat === currentDate) {
+          day.isToday = true;
+        }
+
         const dayName = getDayName(dateFormat);
         const daySchedule = schedule[dayName];
 

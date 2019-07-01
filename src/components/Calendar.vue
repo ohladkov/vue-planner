@@ -14,6 +14,7 @@
         :events="eventsDays[index + 1]"
         :specialEvents="specialDays[index + 1]"
         :schedule="schedule"
+        :currentDate="currentDate"
       />
     </div>
 
@@ -26,7 +27,7 @@ import Month from './Month';
 import Modal from './Modal';
 import { Api } from '../api/api';
 import { months } from '../helpers/constants';
-import { sortEventsByMonth } from '../helpers/dateUtils';
+import { sortEventsByMonth, getCurrentDate } from '../helpers/dateUtils';
 import { isEmptyObject } from '../helpers/utils';
 
 export default {
@@ -43,19 +44,24 @@ export default {
       specialEvents: {},
       schedule: {},
       modalInfo: {},
+      currentDate: getCurrentDate(),
       months,
     };
   },
   mounted() {
-    this.setData();
+    this.setData('planner');
 
     this.$eventBus.$on('showModal', (payload) => {
       this.modalInfo = { ...payload };
     });
+
+    this.$eventBus.$on('calendarRequest', (url) => {
+      this.setData(url);
+    });
   },
   methods: {
-    async setData() {
-      const response = await Api.get('planner');
+    async setData(url) {
+      const response = await Api.get(url);
 
       if (!response.isSuccess()) return;
 
