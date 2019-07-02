@@ -7,14 +7,28 @@
       <h3 class="modal-title">Book time off</h3>
     </div>
     <div class="modal-body">
-      <form action="#" id="book-form" @submit.prevent="onSubmit">
+      <form 
+        @submit.prevent="onSubmit"
+        action="#" 
+        id="book-form"
+      >
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select v-model="holiday.selected" @change="onHolidayChange" class="form-control" name="type" id="type">
-                  <option v-for="option in holiday.options" :key="option.id" :value="option">
+                <select 
+                  v-model="holiday.selected" 
+                  @change="onHolidayChange" 
+                  class="form-control" 
+                  name="type" 
+                  id="type"
+                >
+                  <option 
+                    v-for="option in holiday.options" 
+                    :key="option.id" 
+                    :value="option"
+                  >
                     {{ option.split('_').join(' ') }}
                   </option>
                 </select>
@@ -29,8 +43,8 @@
                     <datepicker
                       v-model="from.date"
                       :mondayFirst="true"
-                      @selected="onSelect"
                       format="D, dd MMM yy"
+                      @selected="onSelect"
                       class="form-control"
                       name="date_from"
                       id="date_from"
@@ -48,7 +62,11 @@
                       name="time_from"
                       id="time_from"
                     >
-                      <option v-for="option in startTimeList" :key="option.value" :value="option.value">
+                      <option 
+                        v-for="option in startTimeList" 
+                        :key="option.value" 
+                        :value="option.value"
+                      >
                         {{ option.text }}
                       </option>
                     </select>
@@ -78,8 +96,17 @@
                 <div class="col-md-5">
                   <div class="form-group">
                     <label for="time_to">&nbsp;</label>
-                    <select v-model="to.selected" class="form-control" name="time_to" id="time_to">
-                      <option v-for="option in endTimeList" :key="option.value" :value="option.value">
+                    <select 
+                      v-model="to.selected" 
+                      class="form-control" 
+                      name="time_to" 
+                      id="time_to"
+                    >
+                      <option 
+                        v-for="option in endTimeList" 
+                        :key="option.value" 
+                        :value="option.value"
+                      >
                         {{ option.text }}
                       </option>
                     </select>
@@ -231,7 +258,6 @@ export default {
       }
 
       const timeList = [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
-      // this.$set(this.from, SELECTED_OPTION, timeList[0].value);
 
       return timeList;
     },

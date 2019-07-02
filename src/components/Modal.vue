@@ -1,9 +1,15 @@
 <template>
   <div class="modal fade" tabindex="-1" role="dialog" id="bookModal">
     <div class="modal-dialog" role="document">
-      <EventInfo v-show="modalInfo.type === 'event'" :events="modalInfo.events" />
+      <EventInfo 
+        v-show="modalInfo.type === 'event'" 
+        :events="modalInfo.events" 
+      />
 
-      <BookForm v-show="modalInfo.type !== 'event'" :schedule="schedule" />
+      <BookForm 
+        v-show="modalInfo.type !== 'event'" 
+        :schedule="schedule" 
+      />
     </div>
   </div>
 </template>
@@ -27,7 +33,7 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('showModal', (payload) => {
-      this.modalInfo = { ...payload };
+      this.modalInfo = payload;
     });
   },
   components: {

@@ -18,7 +18,6 @@ export default {
 <style lang="scss">
 :root {
   --daysInWeek: 7;
-  --scrollBarWidth: 0;
 }
 
 html {

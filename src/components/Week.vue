@@ -1,6 +1,12 @@
 <template>
   <div class="week">
-    <div class="week-day" v-for="day in week" :key="day">{{ day }}</div>
+    <div 
+      v-for="day in week" 
+      :key="day"
+      class="week-day" 
+    >
+      {{ day }}
+    </div>
   </div>
 </template>
 

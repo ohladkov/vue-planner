@@ -12,13 +12,19 @@
     data-toggle="modal"
     data-target="#bookModal"
   >
-    <div :data-type="dayPeriodType.am" class="half first"></div>
+    <div 
+      :data-type="dayPeriodType.am" 
+      class="half first"
+    ></div>
 
     <div class="day-index">
       {{ day.id }}
     </div>
 
-    <div :data-type="dayPeriodType.pm" class="half last"></div>
+    <div 
+      :data-type="dayPeriodType.pm" 
+      class="half last"
+    ></div>
   </div>
 </template>
 
@@ -194,7 +200,6 @@ $holidaysList: (
     background-color: #eee;
   }
 
-  &[data-is-past],
   &[data-empty] {
     pointer-events: none;
     opacity: 0.5;

@@ -5,7 +5,11 @@
     <Week />
 
     <div class="days-list">
-      <Day v-for="day in daysList" :key="day.id" :day="day" />
+      <Day 
+        v-for="day in daysList" 
+        :key="day.id" 
+        :day="day" 
+      />
     </div>
   </div>
 </template>
@@ -73,8 +77,6 @@ export default {
           continue;
         }
 
-        let eventsList = [];
-
         const dateFormat = `${year}-${convertToDoubleDigit(monthId)}-${convertToDoubleDigit(i)}`;
 
         if (dateFormat === currentDate) {
@@ -89,6 +91,8 @@ export default {
         }
 
         day.date = dateFormat;
+
+        let eventsList = [];
 
         if (Array.isArray(events) && Array.isArray(specialEvents)) {
           eventsList = [...events, ...specialEvents];

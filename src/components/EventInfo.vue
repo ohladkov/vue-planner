@@ -68,16 +68,6 @@ export default {
             <div class="col-md-8">
               <div class="event-content">${type.split('_').join(' ')}</div>
             </div>
-            <div class="col-md-4">
-              <div class="event-info">Holiday duration:</div>
-            </div>
-            <div class="col-md-8">
-              <div class="event-content">
-                <strong>${formatDateToString(info.fromDate, info.fromTime)}</strong>
-                to
-                <strong>${formatDateToString(info.toDate, info.toTime)}</strong>
-              </div>
-            </div>
             ${
               info.status
                 ? `<div class="col-md-4">
@@ -88,6 +78,16 @@ export default {
                   </div>`
                 : ''
             }
+            <div class="col-md-4">
+              <div class="event-info">Holiday duration:</div>
+            </div>
+            <div class="col-md-8">
+              <div class="event-content">
+                <strong>${formatDateToString(info.fromDate, info.fromTime)}</strong>
+                to
+                <strong>${formatDateToString(info.toDate, info.toTime)}</strong>
+              </div>
+            </div>
           </div>
           ${
             isCancellable

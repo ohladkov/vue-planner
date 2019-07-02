@@ -41,12 +41,12 @@ export default {
     return {
       title: 'Planner',
       year: new Date().getFullYear(),
+      currentDate: getCurrentDate(),
+      isLoading: false,
+      months,
       events: {},
       specialEvents: {},
       schedule: {},
-      currentDate: getCurrentDate(),
-      months,
-      isLoading: true,
     };
   },
   async mounted() {
@@ -89,8 +89,6 @@ export default {
     async updatePlannerData() {
       await this.getPlannerData();
 
-      this.isLoading = false;
-
       const $modal = jQuery('#bookModal');
 
       if (($modal.data('bs.modal') || {}).isShown) {
@@ -98,6 +96,8 @@ export default {
       }
 
       document.dispatchEvent(plannerUpdatedEvent);
+
+      this.isLoading = false;
     },
   },
   computed: {
