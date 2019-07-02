@@ -40,6 +40,7 @@ export default {
     onClick(e) {
       if (!e.target.dataset.type) {
         const period = e.target.matches('.first') ? MORNING : EVENING;
+
         return this.$eventBus.$emit('showModal', { date: this.$props.day.date, period });
       }
 
@@ -127,21 +128,21 @@ export default {
       const { schedule } = this.$props.day;
 
       return !schedule;
-    }
+    },
   },
 };
 </script>
 
 <style lang="scss">
-$gradient: 'linear-gradient(135deg, crimson, darkorange, violet)';
+$gradient: 'linear-gradient(135deg, rgb(55,255,226), rgb(0,25,167));';
 
 $holidaysList: (
-  'holiday': 'seagreen',
-  'day_off': 'darkorange',
-  'sickness': 'crimson',
-  'workday': 'violet',
-  'public_holiday': 'gold',
-  'locked': 'peru',
+  'holiday': '#049372',
+  'day_off': '#F9690E',
+  'sickness': '#CF3A24',
+  'workday': '#4B77BE',
+  'public_holiday': '#E08A1E',
+  'locked': '#6C7A89',
 );
 
 @mixin holidays($holidayTypes) {

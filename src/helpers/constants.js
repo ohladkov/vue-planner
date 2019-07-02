@@ -62,6 +62,7 @@ export const months = [
 ];
 
 export const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+export const holidayEvents = ['holiday', 'day_off', 'sickness'];
 
 export const holidayParts = {
   start: [
@@ -86,7 +87,8 @@ export const holidayParts = {
   ],
 };
 
-export const holidayEvents = ['holiday', 'day_off', 'sickness'];
+export const STATUS_PENDING = [5, 'Pending'];
+export const STATUS_APPROVED = [10, 'Approved'];
 
 export const MORNING = 'am';
 export const EVENING = 'pm';

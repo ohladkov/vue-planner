@@ -4,6 +4,8 @@ export const DATE_FORMAT = 'YYYY-MM-DD';
 
 export const dateToISOString = (date) => moment(date, DATE_FORMAT).toISOString();
 
+export const formatDate = (date, format = DATE_FORMAT) => moment(dateToISOString(date)).format(format);
+
 export const getCurrentDate = () => moment().format(DATE_FORMAT);
 
 export const getDaysInMonth = (date) => moment(dateToISOString(date)).daysInMonth();

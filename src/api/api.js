@@ -17,11 +17,12 @@ class Api {
     this.headers.append(header, value);
   };
 
-  async request(path, method) {
+  async request(path, method, data) {
     const url = `${config.baseUrl}${path}`;
     const options = {
       method,
       headers: this.getHeaders(),
+      body: JSON.stringify(data),
     };
 
     const response = await fetch(url, options);

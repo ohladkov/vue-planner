@@ -7,13 +7,13 @@
       <h3 class="modal-title">Book time off</h3>
     </div>
     <div class="modal-body">
-      <form action="#" id="book-form">
+      <form action="#" id="book-form" @submit.prevent="onSubmit">
         <div class="container">
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select v-model="holiday['selected']" @change="onHolidayChange" class="form-control" name="type" id="type">
+                <select v-model="holiday.selected" @change="onHolidayChange" class="form-control" name="type" id="type">
                   <option v-for="option in holiday.options" :key="option.id" :value="option">
                     {{ option.split('_').join(' ') }}
                   </option>
@@ -42,7 +42,7 @@
                   <div class="form-group">
                     <label for="time_from">&nbsp;</label>
                     <select
-                      v-model="from['selected']"
+                      v-model="from.selected"
                       @change="onChange"
                       class="form-control"
                       name="time_from"
@@ -78,7 +78,7 @@
                 <div class="col-md-5">
                   <div class="form-group">
                     <label for="time_to">&nbsp;</label>
-                    <select v-model="to['selected']" class="form-control" name="time_to" id="time_to">
+                    <select v-model="to.selected" class="form-control" name="time_to" id="time_to">
                       <option v-for="option in endTimeList" :key="option.value" :value="option.value">
                         {{ option.text }}
                       </option>
@@ -113,7 +113,7 @@
 
 <script>
 import Datepicker from 'vuejs-datepicker';
-import { isBefore, createTimesList, getDayName } from '../helpers/dateUtils';
+import { isBefore, createTimesList, getDayName, formatDate } from '../helpers/dateUtils';
 import { holidayEvents, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
 import { isEmptyObject } from '../helpers/utils';
 
@@ -150,20 +150,36 @@ export default {
       },
     };
   },
-  created() {
+  mounted() {
     this.$eventBus.$on('showModal', (payload) => {
-      this.from.date = payload.date;
-      this.to.date = payload.date;
+      const { date, period } = payload;
 
-      this.from[SELECTED_OPTION] = payload.period;
-      this.to[SELECTED_OPTION] = payload.period;
+      this.from.date = date;
+      this.to.date = this.from.date;
 
-      this.disabledDates.to = new Date(payload.date);
+      setTimeout(() => {
+        this.from[SELECTED_OPTION] = period;
+        this.to[SELECTED_OPTION] = period;
+      }, 0);
+
+      this.disabledDates.to = new Date(date);
     });
   },
   methods: {
+    onSubmit() {
+      const formData = {
+        type: this.holiday.selected,
+        date_from: formatDate(this.from.date),
+        date_to: formatDate(this.to.date),
+        time_from: this.from.selected,
+        time_to: this.to.selected,
+        reason: this.reason,
+      };
+
+      return this.$eventBus.$emit('bookEvent', formData);
+    },
     onSelect(date) {
-      if (isBefore(this.to.date, date)) {
+      if (isBefore(this.to.date, date) || this.isDatepickerDisabled) {
         this.to.date = new Date(date);
       }
 
@@ -204,16 +220,18 @@ export default {
     startTimeList() {
       if (!this.scheduleHoursList.length) {
         this.$set(this.from, SELECTED_OPTION, holidayParts.start[0].value);
+
         return holidayParts.start;
       }
 
       if (this.holiday[SELECTED_OPTION] !== DAY_OFF) {
         this.$set(this.from, SELECTED_OPTION, holidayParts.start[0].value);
+
         return holidayParts.start;
       }
 
       const timeList = [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
-      this.$set(this.from, SELECTED_OPTION, timeList[0].value);
+      // this.$set(this.from, SELECTED_OPTION, timeList[0].value);
 
       return timeList;
     },

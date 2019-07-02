@@ -15,14 +15,20 @@ import EventInfo from './EventInfo';
 export default {
   name: 'Modal',
   props: {
-    modalInfo: {
-      required: true,
-      type: Object,
-    },
     schedule: {
       required: true,
       type: Object,
     },
+  },
+  data() {
+    return {
+      modalInfo: {},
+    };
+  },
+  mounted() {
+    this.$eventBus.$on('showModal', (payload) => {
+      this.modalInfo = { ...payload };
+    });
   },
   components: {
     BookForm,

@@ -16,7 +16,7 @@
 
 <script>
 import { formatDateToString } from '../helpers/dateUtils';
-import { holidayEvents } from '../helpers/constants';
+import { holidayEvents, STATUS_PENDING, STATUS_APPROVED } from '../helpers/constants';
 
 export default {
   name: 'EventInfo',
@@ -32,9 +32,8 @@ export default {
 
       if (!id) return;
 
-      this.$eventBus.$emit('calendarRequest', `?cancel=${id}`);
-      jQuery('#bookModal').modal('hide');
-    }
+      this.$eventBus.$emit('cancelEvent', id);
+    },
   },
   computed: {
     eventsInfo() {
@@ -47,6 +46,7 @@ export default {
       events.forEach((event) => {
         eventsInfo[event.type] = {
           id: event.id,
+          status: event.status,
           fromDate: `${event.date_from}`,
           fromTime: `${event.time_from || ''}`,
           toDate: `${event.date_to}`,
@@ -59,6 +59,7 @@ export default {
           const [type, info] = event;
           const isCancellable = holidayEvents.includes(type);
           const divider = index < events.length - 1 ? '<hr>' : '';
+          const status = info.status === STATUS_PENDING[0] ? STATUS_PENDING[1] : STATUS_APPROVED[1];
 
           return `<div class="row">
             <div class="col-md-4">
@@ -77,6 +78,16 @@ export default {
                 <strong>${formatDateToString(info.toDate, info.toTime)}</strong>
               </div>
             </div>
+            ${
+              info.status
+                ? `<div class="col-md-4">
+                    <div class="event-info">Holiday status:</div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="event-content">${status}</div>
+                  </div>`
+                : ''
+            }
           </div>
           ${
             isCancellable
