@@ -7,9 +7,9 @@
       <h3 class="modal-title">Book time off</h3>
     </div>
     <div class="modal-body">
-      <form 
+      <form
         @submit.prevent="onSubmit"
-        action="#" 
+        action="#"
         id="book-form"
       >
         <div class="container">
@@ -17,16 +17,16 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label for="type">Holiday type</label>
-                <select 
-                  v-model="holiday.selected" 
-                  @change="onHolidayChange" 
-                  class="form-control" 
-                  name="type" 
+                <select
+                  v-model="holiday.selected"
+                  @change="onHolidayChange"
+                  class="form-control"
+                  name="type"
                   id="type"
                 >
-                  <option 
-                    v-for="option in holiday.options" 
-                    :key="option.id" 
+                  <option
+                    v-for="option in holiday.options"
+                    :key="option.id"
                     :value="option"
                   >
                     {{ option.split('_').join(' ') }}
@@ -62,9 +62,9 @@
                       name="time_from"
                       id="time_from"
                     >
-                      <option 
-                        v-for="option in startTimeList" 
-                        :key="option.value" 
+                      <option
+                        v-for="option in startTimeList"
+                        :key="option.value"
                         :value="option.value"
                       >
                         {{ option.text }}
@@ -96,15 +96,15 @@
                 <div class="col-md-5">
                   <div class="form-group">
                     <label for="time_to">&nbsp;</label>
-                    <select 
-                      v-model="to.selected" 
-                      class="form-control" 
-                      name="time_to" 
+                    <select
+                      v-model="to.selected"
+                      class="form-control"
+                      name="time_to"
                       id="time_to"
                     >
-                      <option 
-                        v-for="option in endTimeList" 
-                        :key="option.value" 
+                      <option
+                        v-for="option in endTimeList"
+                        :key="option.value"
                         :value="option.value"
                       >
                         {{ option.text }}
@@ -141,7 +141,7 @@
 <script>
 import Datepicker from 'vuejs-datepicker';
 import { isBefore, createTimesList, getDayName, formatDate } from '../helpers/dateUtils';
-import { holidayEvents, holidayParts, MORNING, EVENING, DAY_OFF } from '../helpers/constants';
+import { holidayEvents, holidayParts, MORNING, EVENING, DAY_OFF, FULL_DAY } from '../helpers/constants';
 import { isEmptyObject } from '../helpers/utils';
 
 const SELECTED_OPTION = 'selected';
@@ -185,8 +185,8 @@ export default {
       this.to.date = this.from.date;
 
       setTimeout(() => {
-        this.from[SELECTED_OPTION] = period;
-        this.to[SELECTED_OPTION] = period;
+        this.from[SELECTED_OPTION] = period === FULL_DAY ? MORNING : period;
+        this.to[SELECTED_OPTION] = period === FULL_DAY ? MORNING : period;
       }, 0);
 
       this.disabledDates.to = new Date(date);

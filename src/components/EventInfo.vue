@@ -21,9 +21,9 @@ import { holidayEvents, STATUS_PENDING, STATUS_APPROVED } from '../helpers/const
 export default {
   name: 'EventInfo',
   props: {
-    events: {
+    modalInfo: {
       required: true,
-    },
+    }
   },
   methods: {
     async onClick(e) {
@@ -31,9 +31,13 @@ export default {
       const cancelBtn = e.target.matches('[data-event-id]');
       const id = cancelBtn ? e.target.dataset.eventId : null;
 
-      // if (isEventBtn) {
-      //   this.$eventBus.$emit('showModal', {});
-      // }
+      if (isEventBtn) {
+        const { date, period } = this.$props.modalInfo;
+        this.$eventBus.$emit('showModal', {
+          date,
+          period
+        });
+      }
 
       if (!id) return;
 
@@ -42,7 +46,7 @@ export default {
   },
   computed: {
     eventsInfo() {
-      const { events } = this.$props;
+      const { events } = this.$props.modalInfo;
 
       if (!events || !events.length) return;
 
@@ -96,7 +100,7 @@ export default {
           </div>
           <div class="row">
             <div class="btn-wrap">
-              <button type="button" class="btn btn-lg btn-success" data-toggle="modal">Add event</button>
+              <button type="button" class="btn btn-lg btn-success" data-toggle="modal">Book event</button>
               ${
                 isCancellable
                   ? `<button type="submit" class="btn btn-lg btn-danger" data-event-id="${

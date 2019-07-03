@@ -1,14 +1,14 @@
 <template>
   <div class="modal fade" tabindex="-1" role="dialog" id="bookModal">
     <div class="modal-dialog" role="document">
-      <EventInfo 
-        v-show="modalInfo.type === 'event'" 
-        :events="modalInfo.events" 
+      <EventInfo
+        v-show="modalInfo.type === 'event'"
+        :modalInfo="modalInfo"
       />
 
-      <BookForm 
-        v-show="modalInfo.type !== 'event'" 
-        :schedule="schedule" 
+      <BookForm
+        v-show="modalInfo.type !== 'event'"
+        :schedule="schedule"
       />
     </div>
   </div>

@@ -52,6 +52,7 @@ export default {
         holiday,
         period,
         events: this.allEvents,
+        date: this.$props.day.date
       };
 
       this.$eventBus.$emit('showModal', payload);
