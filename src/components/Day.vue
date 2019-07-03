@@ -12,19 +12,13 @@
     data-toggle="modal"
     data-target="#bookModal"
   >
-    <div 
-      :data-type="dayPeriodType.am" 
-      class="half first"
-    ></div>
+    <div :data-type="dayPeriodType.am" class="half first"></div>
 
     <div class="day-index">
       {{ day.id }}
     </div>
 
-    <div 
-      :data-type="dayPeriodType.pm" 
-      class="half last"
-    ></div>
+    <div :data-type="dayPeriodType.pm" class="half last"></div>
   </div>
 </template>
 
@@ -69,6 +63,8 @@ export default {
 
       if (Array.isArray(events)) {
         events.forEach((event) => {
+          if (event.type === 'workday') return [];
+
           if (schedule) {
             if (event.time_from <= schedule.m.f && event.time_to < schedule.a.f) {
               event.time_period = MORNING;
@@ -133,22 +129,19 @@ export default {
     freeDay() {
       const { schedule } = this.$props.day;
 
-      return !schedule;
+      return this.holidayTypes.join() !== 'workday' && !schedule;
     },
   },
 };
 </script>
 
 <style lang="scss">
-$gradient: 'linear-gradient(135deg, rgb(55,255,226), rgb(0,25,167));';
+$gradient: 'linear-gradient(135deg, #049372 0, #049372 33%, #4b77be 0, #4b77be 66%, #F9690E 0)';
 
 $holidaysList: (
   'holiday': '#049372',
   'day_off': '#F9690E',
   'sickness': '#CF3A24',
-  'workday': '#4B77BE',
-  'public_holiday': '#E08A1E',
-  'locked': '#6C7A89',
 );
 
 @mixin holidays($holidayTypes) {
@@ -203,6 +196,96 @@ $holidaysList: (
   &[data-empty] {
     pointer-events: none;
     opacity: 0.5;
+  }
+
+  &[data-holiday='locked'] {
+    &[data-period='workday'] {
+        color: #fff;
+      background-image: url('../assets/lock.svg');
+      background-repeat: no-repeat;
+      background-size: 30px;
+      background-position: center 0;
+    }
+
+    &[data-period='am'] {
+      .first {
+        background-image: linear-gradient(
+          -45deg,
+          rgba(#b5b5b5, 1) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(#b5b5b5, 1) 50%,
+          rgba(#b5b5b5, 1) 75%,
+          transparent 75%,
+          transparent
+        );
+        background-size: 3px 3px;
+      }
+    }
+
+    &[data-period='pm'] {
+      .last {
+        background-image: linear-gradient(
+          -45deg,
+          rgba(#b5b5b5, 1) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(#b5b5b5, 1) 50%,
+          rgba(#b5b5b5, 1) 75%,
+          transparent 75%,
+          transparent
+        );
+        background-size: 3px 3px;
+      }
+    }
+  }
+
+  &[data-holiday='public_holiday'] {
+    &[data-period='workday'] {
+      background-image: linear-gradient(
+        -45deg,
+        rgba(#b5b5b5, 1) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(#b5b5b5, 1) 50%,
+        rgba(#b5b5b5, 1) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 3px 3px;
+    }
+
+    &[data-period='am'] {
+      .first {
+        background-image: linear-gradient(
+          -45deg,
+          rgba(#b5b5b5, 1) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(#b5b5b5, 1) 50%,
+          rgba(#b5b5b5, 1) 75%,
+          transparent 75%,
+          transparent
+        );
+        background-size: 3px 3px;
+      }
+    }
+
+    &[data-period='pm'] {
+      .last {
+        background-image: linear-gradient(
+          -45deg,
+          rgba(#b5b5b5, 1) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(#b5b5b5, 1) 50%,
+          rgba(#b5b5b5, 1) 75%,
+          transparent 75%,
+          transparent
+        );
+        background-size: 3px 3px;
+      }
+    }
   }
 
   &[data-holiday='multiple'] {

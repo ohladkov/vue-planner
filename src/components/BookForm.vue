@@ -259,10 +259,16 @@ export default {
 
       const timeList = [...holidayParts.start, ...this.scheduleHoursList.slice(0, -1)];
 
+      this.$set(this.from, SELECTED_OPTION, timeList[0].value);
+
       return timeList;
     },
     endTimeList() {
-      if (!this.scheduleHoursList.length) {
+      if (!this.scheduleHoursList.length && this.from[SELECTED_OPTION] === EVENING) {
+        this.$set(this.to, SELECTED_OPTION, EVENING);
+
+        return holidayParts.end.slice(holidayParts.end.length - 1);
+      } else if (!this.scheduleHoursList.length) {
         this.$set(this.to, SELECTED_OPTION, holidayParts.end[0].value);
 
         return holidayParts.end;

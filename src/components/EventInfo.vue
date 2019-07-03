@@ -27,8 +27,13 @@ export default {
   },
   methods: {
     async onClick(e) {
-      const btn = e.target.matches('[data-event-id]');
-      const id = btn ? e.target.dataset.eventId : null;
+      const isEventBtn = e.target.matches('[data-toggle="modal"]');
+      const cancelBtn = e.target.matches('[data-event-id]');
+      const id = cancelBtn ? e.target.dataset.eventId : null;
+
+      // if (isEventBtn) {
+      //   this.$eventBus.$emit('showModal', {});
+      // }
 
       if (!id) return;
 
@@ -89,11 +94,19 @@ export default {
               </div>
             </div>
           </div>
-          ${
-            isCancellable
-              ? `<button type="submit" class="btn btn-lg btn-danger" data-event-id="${info.id}">Cancel holiday</button>`
-              : ''
-          }${divider}`;
+          <div class="row">
+            <div class="btn-wrap">
+              <button type="button" class="btn btn-lg btn-success" data-toggle="modal">Add event</button>
+              ${
+                isCancellable
+                  ? `<button type="submit" class="btn btn-lg btn-danger" data-event-id="${
+                      info.id
+                    }">Cancel holiday</button>`
+                  : ''
+              }
+            </div>
+          </div>
+          ${divider}`;
         })
         .join('');
     },
@@ -105,10 +118,16 @@ export default {
 .event-form {
   padding-bottom: 10px;
 
-  .btn[type='submit'] {
-    display: block;
+  .btn-wrap {
+    display: flex;
+    justify-content: flex-end;
     margin-top: 10px;
-    margin-left: auto;
+
+    .btn {
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+    }
   }
 }
 </style>
